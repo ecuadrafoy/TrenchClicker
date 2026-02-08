@@ -1,4 +1,6 @@
 
+
+
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -12,7 +14,22 @@ public class GameManager : MonoBehaviour
     [Header("Combat Settings")]
     [SerializeField] private int enemyTrenchHP = 100;
     [SerializeField] private int soldierDamage = 1;
+
+    [Header("Assault Timer Settings")]
+    [SerializeField] private float assaultDuration = 90f; // 90 seconds
+    [SerializeField] private float reinforcementRate = 5f; //HP per seconds
+    [SerializeField] private float maxReinforcementMultiplier = 1.5f;
+
     private int currentEnemyHP;
+    private int maxReinforcedHP;
+    private float currentAssaultTime = 0f;
+    private bool isAssaultActive = false;
+    private bool isReinforcing = false;
+    private float currentReinforcementRate;
+    private float reinforcementAccumulator = 0f;
+
+
+
 
     void Awake()
     {
@@ -35,15 +52,39 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isAssaultActive) return;
 
+        // Increment assault timer
+        currentAssaultTime += Time.deltaTime;
+
+        // Check if timer expired and reinforcements should start
+        if (currentAssaultTime >= assaultDuration && !isReinforcing)
+        {
+            TriggerReinforcements();
+        }
+
+        // Process reinforcements if active
+        if (isReinforcing)
+        {
+            ProcessReinforcements();
+        }
+
+        // Update UI every frame during assault
+        UIManager.Instance?.UpdateUI();
     }
     private void InitializeGame()
     {
         currentEnemyHP = enemyTrenchHP;
+        maxReinforcedHP = Mathf.RoundToInt(enemyTrenchHP * maxReinforcementMultiplier);
+        currentReinforcementRate = reinforcementRate;
         Debug.Log("Game Initialized. Enemy Trench HP: " + currentEnemyHP);
     }
     public void OnSoldierClick()
     {
+        if (!isAssaultActive)
+        {
+            StartAssault();
+        }
         totalSoldiers += soldiersPerClick;
         Debug.Log($"Soldiers sent: {soldiersPerClick}. Total: {totalSoldiers}");
 
@@ -52,6 +93,34 @@ public class GameManager : MonoBehaviour
 
         // Update UI
         UIManager.Instance?.UpdateUI();
+    }
+    private void StartAssault()
+    {
+        isAssaultActive = true;
+        currentAssaultTime = 0f;
+        Debug.Log("ASSAULT STARTED! Timer begins...");
+    }
+    private void TriggerReinforcements()
+    {
+        isReinforcing = true;
+        Debug.Log("Reinforcements Arriving! Trench is being reinforced...");
+
+        UIManager.Instance?.ShowReinforcementWarning();
+    }
+    private void ProcessReinforcements()
+    {
+        reinforcementAccumulator += currentReinforcementRate * Time.deltaTime;
+
+        if (reinforcementAccumulator >= 1f)
+        {
+            int hpToAdd = Mathf.FloorToInt(reinforcementAccumulator);
+            reinforcementAccumulator -= hpToAdd; // Keep the remainder
+
+            int previousHP = currentEnemyHP;
+            currentEnemyHP = Mathf.Min(currentEnemyHP + hpToAdd, maxReinforcedHP);
+
+            Debug.Log($"Enemy reinforced: +{hpToAdd} HP. Current: {currentEnemyHP}/{maxReinforcedHP}");
+        }
     }
     private void ProcessCombat(int soldiersSent)
     {
@@ -77,8 +146,23 @@ public class GameManager : MonoBehaviour
         Debug.Log("Trench Captured!");
         groundGained += 120f;
 
+        ResetAssault();
+        // Increase difficulty for next rench
         currentEnemyHP = enemyTrenchHP;
         enemyTrenchHP = Mathf.RoundToInt(enemyTrenchHP * 1.2f);
+        maxReinforcedHP = Mathf.RoundToInt(enemyTrenchHP * maxReinforcementMultiplier);
+
+        // Scale reinforcement rate with difficulty
+        currentReinforcementRate = reinforcementRate * (enemyTrenchHP / 100f);
+        Debug.Log($"Next trench HP: {enemyTrenchHP}. Reinforcement rate: {currentReinforcementRate:F1}/sec");
+    }
+
+    private void ResetAssault()
+    {
+        isAssaultActive = false;
+        isReinforcing = false;
+        currentAssaultTime = 0f;
+        reinforcementAccumulator = 0f;
     }
 
     //Getters for UI
@@ -86,4 +170,9 @@ public class GameManager : MonoBehaviour
     public float GetgroundGained() => groundGained;
     public int GetCurrentEnemyHP() => currentEnemyHP;
     public int GetMaxEnemyHP() => enemyTrenchHP;
+    public float GetAssaultTimeRemaining() => Mathf.Max(0, assaultDuration - currentAssaultTime);
+    public bool IsAssaultActive() => isAssaultActive;
+    public bool IsReinforcing() => isReinforcing;
+    public int GetMaxReinforcedHP() => maxReinforcedHP;
+
 }
