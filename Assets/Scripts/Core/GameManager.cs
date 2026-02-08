@@ -165,6 +165,18 @@ public class GameManager : MonoBehaviour
         reinforcementAccumulator = 0f;
     }
 
+    public void SpendGroundGained(float amount)
+    {
+        groundGained -= amount;
+        if (groundGained < 0) groundGained = 0;
+        Debug.Log($"Spent {amount:F1} inches. Remaining: {groundGained:F1}");
+    }
+    public void AddSoldiersPerClick(int amount)
+    {
+        soldiersPerClick += amount;
+        Debug.Log($"Soldiers per click increased by {amount}. Now: {soldiersPerClick}");
+    }
+
     //Getters for UI
     public int GetTotalSoldiers() => totalSoldiers;
     public float GetgroundGained() => groundGained;
@@ -174,5 +186,7 @@ public class GameManager : MonoBehaviour
     public bool IsAssaultActive() => isAssaultActive;
     public bool IsReinforcing() => isReinforcing;
     public int GetMaxReinforcedHP() => maxReinforcedHP;
+
+    public int GetSoldierPerClick() => soldiersPerClick;
 
 }

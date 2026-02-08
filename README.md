@@ -30,8 +30,6 @@ Click to generate soldiers who automatically assault enemy trenches. Upgrade you
 
 - **Engine:** Unity 6
 - **Language:** C#
-- **Input System:** Unity Input System
-- **UI:** TextMesh Pro
 
 ## Project Structure
 
