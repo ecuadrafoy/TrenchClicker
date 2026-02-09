@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI enemyHPText;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Button clickButton;
+    [SerializeField] private Button startAssaultButton;
 
     [Header("Warning Settings")]
     [SerializeField] private Color normalTimerColor = Color.white;
@@ -43,7 +44,10 @@ public class UIManager : MonoBehaviour
         {
             clickButton.onClick.AddListener(OnClickButtonPressed);
         }
-        //StartCoroutine(InitializeUINextFrame());
+        if (startAssaultButton != null)
+        {
+            startAssaultButton.onClick.AddListener(OnStartAssaultButtonPressed);
+        }
         UpdateUI();
 
     }
@@ -57,6 +61,23 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance != null)
+        {
+            bool assaultActive = GameManager.Instance.IsAssaultActive();
+
+            // Start assault button only available when NOT in assault
+            if (startAssaultButton != null)
+            {
+                startAssaultButton.interactable = !assaultActive;
+            }
+            //Click button only available DURING assault
+            if (clickButton != null)
+            {
+                clickButton.interactable = assaultActive;
+            }
+
+        }
+
 
     }
     private void OnClickButtonPressed()
@@ -153,5 +174,9 @@ public class UIManager : MonoBehaviour
         if (isShowingWarning) return;
         isShowingWarning = true;
         Debug.Log("UI: Showing reinforcement warning!");
+    }
+    private void OnStartAssaultButtonPressed()
+    {
+        GameManager.Instance?.StartAssaultButton();
     }
 }

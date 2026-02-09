@@ -83,7 +83,8 @@ public class GameManager : MonoBehaviour
     {
         if (!isAssaultActive)
         {
-            StartAssault();
+            Debug.Log("Assault not started yet! Click 'Start Assault' first.");
+            return;
         }
         totalSoldiers += soldiersPerClick;
         Debug.Log($"Soldiers sent: {soldiersPerClick}. Total: {totalSoldiers}");
@@ -148,8 +149,8 @@ public class GameManager : MonoBehaviour
 
         ResetAssault();
         // Increase difficulty for next rench
-        currentEnemyHP = enemyTrenchHP;
         enemyTrenchHP = Mathf.RoundToInt(enemyTrenchHP * 1.2f);
+        currentEnemyHP = enemyTrenchHP;
         maxReinforcedHP = Mathf.RoundToInt(enemyTrenchHP * maxReinforcementMultiplier);
 
         // Scale reinforcement rate with difficulty
@@ -175,6 +176,18 @@ public class GameManager : MonoBehaviour
     {
         soldiersPerClick += amount;
         Debug.Log($"Soldiers per click increased by {amount}. Now: {soldiersPerClick}");
+    }
+    public void StartAssaultButton()
+    {
+        if (isAssaultActive)
+        {
+            Debug.Log("Assault already active!");
+            return;
+        }
+        StartAssault();
+        Debug.Log("Assault started by player!");
+        // Update UI
+        UIManager.Instance?.UpdateUI();
     }
 
     //Getters for UI
