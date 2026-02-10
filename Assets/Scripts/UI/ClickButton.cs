@@ -9,6 +9,7 @@ public class ClickButton : MonoBehaviour
 
     [SerializeField] private float punchScale = 0.9f;
     [SerializeField] private float punchDuration = 0.1f;
+    private bool isAnimating = false;
     void Awake()
     {
         button = GetComponent<Button>();
@@ -28,8 +29,17 @@ public class ClickButton : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(PunchAnimation());
     }
+    public void TriggerPunchAnimation()
+    {
+        if (!isAnimating)
+        {
+            StopAllCoroutines();
+            StartCoroutine(PunchAnimation());
+        }
+    }
     private System.Collections.IEnumerator PunchAnimation()
     {
+        isAnimating = true;
         float elapsed = 0f;
         // Scale Down
         while (elapsed < punchDuration / 2f)
@@ -49,5 +59,6 @@ public class ClickButton : MonoBehaviour
             yield return null;
         }
         transform.localScale = originalScale;
+        isAnimating = false;
     }
 }

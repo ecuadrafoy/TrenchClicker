@@ -179,4 +179,15 @@ public class UIManager : MonoBehaviour
     {
         GameManager.Instance?.StartAssaultButton();
     }
+    public void TriggerClickButtonAnimation()
+    {
+        if (clickButton != null)
+        {
+            ClickButton buttonAnim = clickButton.GetComponent<ClickButton>();
+            if (buttonAnim != null)
+            {
+                buttonAnim.TriggerPunchAnimation();
+            }
+        }
+    }
 }

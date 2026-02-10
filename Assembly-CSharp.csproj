@@ -48,8 +48,10 @@
     <Analyzer Include="E:\Program Files\Unity Hub\Engine\6000.3.2f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Core\InputManager.cs" />
     <Compile Include="Assets\Scripts\Core\UpgradeManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIShop.cs" />
+    <Compile Include="Assets\PlayerInputActions.cs" />
     <Compile Include="Assets\Scripts\Data\UpgradeData.cs" />
     <Compile Include="Assets\Scripts\UI\ClickButton.cs" />
     <Compile Include="Assets\Scripts\Core\GameManager.cs" />
