@@ -1,5 +1,4 @@
-using NUnit.Framework.Internal.Commands;
-using Unity.VisualScripting;
+
 using UnityEngine;
 
 public class UpgradeManager : MonoBehaviour
@@ -8,6 +7,7 @@ public class UpgradeManager : MonoBehaviour
 
     [Header("Available Upgrades")]
     [SerializeField] private UpgradeData soldiersPerClickUpgrade;
+    [SerializeField] private UpgradeData soldiersBulkUpgrade;
 
     void Awake()
     {
@@ -53,4 +53,5 @@ public class UpgradeManager : MonoBehaviour
         Debug.Log($"Applied upgrade: +{upgrade.soldiersPerClickIncrease} soldiers per click");
     }
     public UpgradeData GetSoldiersPerClickUpgrade() => soldiersPerClickUpgrade;
+    public UpgradeData GetSoldiersBulkUpgrade() => soldiersBulkUpgrade;
 }
