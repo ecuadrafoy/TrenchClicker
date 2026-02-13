@@ -1,13 +1,26 @@
 using UnityEngine;
-[CreateAssetMenu(fileName = "New Upgrade", menuName = "Upgrade")]
+public enum StatTarget
+{
+    SoldiersPerClick,
+    DamageMin,
+    DamageMax
+}
+public enum UpgradeType
+{
+    FlatAddition,
+    Multiplier
+}
+[CreateAssetMenu(fileName = "New Upgrade", menuName = "WW1Clicker/Upgrade")]
 public class UpgradeData : ScriptableObject
 {
-    [Header("Upgrade Info")]
-    public string upgradeName = "More Soldiers";
+    [Header("Display")]
+    public string upgradeName = "New Upgrade.";
     [TextArea(2, 4)]
-    public string description = "Increases the number of soldiers sent per click.";
-    [Header("Effects")]
-    public int soldiersPerClickIncrease = 5;
+    public string description = "Upgrade Description.";
+    [Header("Effect")]
+    public StatTarget statTarget = StatTarget.SoldiersPerClick;
+    public UpgradeType upgradeType = UpgradeType.FlatAddition;
+    public float effectValue = 1f;
     [Header("Cost")]
     public float baseCost = 100f;
     public float costMutiplier = 1.5f;

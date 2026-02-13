@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
   upgradeName: Soldier Batttalion
   description: Send a large battalion of soldiers with each click
-  soldiersPerClickIncrease: 100
-  baseCost: 2000
+  statTarget: 0
+  upgradeType: 0
+  effectValue: 100
+  baseCost: 50
   costMutiplier: 2
   maxPurchases: -1

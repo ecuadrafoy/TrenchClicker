@@ -107,18 +107,18 @@ public class UIManager : MonoBehaviour
         }
         if (enemyHPText != null)
         {
-            int currentHP = GameManager.Instance.GetCurrentEnemyHP();
+            float currentHP = GameManager.Instance.GetCurrentEnemyHP();
             int maxHP = GameManager.Instance.GetMaxEnemyHP();
             if (GameManager.Instance.IsReinforcing())
             {
-                int maxReinforcedHP = GameManager.Instance.GetMaxReinforcedHP();
+                float maxReinforcedHP = GameManager.Instance.GetMaxReinforcedHP();
                 // Show current vs original max, with reinforced cap in parentheses
-                enemyHPText.text = $"Enemy Trench: {currentHP}/{maxHP} (Max: {maxReinforcedHP})";
+                enemyHPText.text = $"Enemy Trench: {currentHP:F1}/{maxHP} (Max: {maxReinforcedHP:F1})";
                 enemyHPText.color = Color.red;
             }
             else
             {
-                enemyHPText.text = $"Enemy Trench: {currentHP}/{maxHP}";
+                enemyHPText.text = $"Enemy Trench: {currentHP:F1}/{maxHP}";
                 enemyHPText.color = Color.white;
             }
         }

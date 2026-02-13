@@ -113,7 +113,7 @@ public class UIShop : MonoBehaviour
 
         // Update text
         nameText.text = upgrade.upgradeName;
-        descText.text = $"{upgrade.description}\n+{upgrade.soldiersPerClickIncrease} soldiers per click";
+        descText.text = $"{upgrade.description}\n+{upgrade.effectValue} {upgrade.statTarget}";
 
         float cost = upgrade.GetCurrentCost();
         costText.text = cost >= 12f

@@ -49,8 +49,32 @@ public class UpgradeManager : MonoBehaviour
     private void ApplyUpgrade(UpgradeData upgrade)
     {
         if (GameManager.Instance == null) return;
-        GameManager.Instance.AddSoldiersPerClick(upgrade.soldiersPerClickIncrease);
-        Debug.Log($"Applied upgrade: +{upgrade.soldiersPerClickIncrease} soldiers per click");
+        switch (upgrade.statTarget)
+        {
+            case StatTarget.SoldiersPerClick:
+                if (upgrade.upgradeType == UpgradeType.FlatAddition)
+                    GameManager.Instance.AddSoldiersPerClick((int)upgrade.effectValue);
+                //else if (upgrade.upgradeType == UpgradeType.Multiplier)
+                //    GameManager.Instance.MultiplySoldiersPerClick(upgrade.effectValue);
+                break;
+            case StatTarget.DamageMin:
+                if (upgrade.upgradeType == UpgradeType.FlatAddition)
+                    GameManager.Instance.ModifySoldierDamageMin(upgrade.effectValue);
+                else if (upgrade.upgradeType == UpgradeType.Multiplier)
+                    GameManager.Instance.ModifySoldierDamageMin(GameManager.Instance.SoldierDamageMin * upgrade.effectValue - GameManager.Instance.SoldierDamageMin);
+                break;
+
+            case StatTarget.DamageMax:
+                if (upgrade.upgradeType == UpgradeType.FlatAddition)
+                    GameManager.Instance.ModifySoldierDamageMax(upgrade.effectValue);
+                else if (upgrade.upgradeType == UpgradeType.Multiplier)
+                    GameManager.Instance.ModifySoldierDamageMax(GameManager.Instance.SoldierDamageMax * upgrade.effectValue - GameManager.Instance.SoldierDamageMax);
+                break;
+
+            default:
+                Debug.LogWarning($"ApplyUpgrade: unhandled StatTarget {upgrade.statTarget}");
+                break;
+        }
     }
     public UpgradeData GetSoldiersPerClickUpgrade() => soldiersPerClickUpgrade;
     public UpgradeData GetSoldiersBulkUpgrade() => soldiersBulkUpgrade;

@@ -1228,7 +1228,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Cost: 100 inches'
+  m_text: 'Cost: 2000 inches'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1930,7 +1930,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Send more soldiers with each click\n+5 soldiers per click
+  m_text: Buy 100 Soldiers in one purchase
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2833,8 +2833,9 @@ MonoBehaviour:
   groundGained: 0
   soldiersPerClick: 1
   enemyTrenchHP: 100
-  soldierDamage: 1
-  assaultDuration: 60
+  soldierDamageMin: 0
+  soldierDamageMax: 1
+  assaultDuration: 20
   reinforcementRate: 0.5
   maxReinforcementMultiplier: 1.5
 --- !u!1 &1496176386
@@ -3087,8 +3088,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -200, y: -0.0024414062}
-  m_SizeDelta: {x: 400, y: -0.005004883}
+  m_AnchoredPosition: {x: -210.875, y: -0.0024414062}
+  m_SizeDelta: {x: 421.75, y: -0.005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1558560076
 MonoBehaviour:

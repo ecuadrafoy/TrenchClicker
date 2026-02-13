@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
   upgradeName: More Soldiers
   description: Increases the number of soldiers sent per click.
-  soldiersPerClickIncrease: 5
-  baseCost: 100
+  soldiersPerClickIncrease: 1
+  baseCost: 1
   costMutiplier: 1.5
   maxPurchases: -1
