@@ -15,4 +15,18 @@
 Thumbs.db
 
 # Claude generated
-Claude.md
+.claude/
+
+#Tools
+Resources/
+Assets/com.IvanMurzak
+Assets/Resources/AI-Game-Developer-Config.json
+com.IvanMurzak.Unity.MCP.Installer.csproj
+com.IvanMurzak.Unity.MCP.Installer.Tests.csproj
+.mcp.json
+
+#Meta files
+Assets/com.IvanMurzak.Unity.MCP.Installer/Editor/Meta/
+Assets/com.IvanMurzak.Unity.MCP.Installer/Runtime/Meta/
+Assets/com.IvanMurzak.Unity.MCP.Installer/Tests/Meta/
+*.meta

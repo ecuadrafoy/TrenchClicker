@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     private bool isAssaultActive = false;
     private bool isReinforcing = false;
     private float currentReinforcementRate;
+    private int trenchesCaptured = 0;
 
 
 
@@ -144,6 +145,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Trench Captured!");
         groundGained += 120f;
+        trenchesCaptured++;
 
         ResetAssault();
         // Increase difficulty for next trench
@@ -211,5 +213,28 @@ public class GameManager : MonoBehaviour
 
     public void ModifySoldierDamageMin(float amount) => SoldierDamageMin = Mathf.Clamp(SoldierDamageMin + amount, 0f, soldierDamageMax);
     public void ModifySoldierDamageMax(float amount) => SoldierDamageMax = Mathf.Clamp(SoldierDamageMax + amount, soldierDamageMin, 2f);
+
+    // Debug helper methods
+    public void SetCurrentEnemyHP(float hp)
+    {
+        currentEnemyHP = Mathf.Clamp(hp, 0f, maxReinforcedHP);
+        if (currentEnemyHP <= 0f)
+        {
+            CaptureTrench();
+        }
+    }
+    public void AddGroundGained(float amount) => groundGained += amount;
+    public void ResetAssaultTimer()
+    {
+        currentAssaultTime = 0f;
+        isReinforcing = false;
+    }
+    public int GetTrenchesCaptured() => trenchesCaptured;
+    public float GetReinforcementRate() => currentReinforcementRate;
+    public float GetAssaultDuration() => assaultDuration;
+    public void SetSoldierDamageMin(float value) => SoldierDamageMin = Mathf.Clamp(value, 0f, SoldierDamageMax);
+    public void SetSoldierDamageMax(float value) => SoldierDamageMax = Mathf.Clamp(value, SoldierDamageMin, 100f);
+    public void SetSoldiersPerClick(int value) => soldiersPerClick = Mathf.Max(1, value);
+    public void SetIsReinforcing(bool value) => isReinforcing = value;
 
 }
