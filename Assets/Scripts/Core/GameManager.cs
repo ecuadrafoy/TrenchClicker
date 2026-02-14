@@ -212,7 +212,7 @@ public class GameManager : MonoBehaviour
     public float SoldierDamageMax { get; private set; }
 
     public void ModifySoldierDamageMin(float amount) => SoldierDamageMin = Mathf.Clamp(SoldierDamageMin + amount, 0f, soldierDamageMax);
-    public void ModifySoldierDamageMax(float amount) => SoldierDamageMax = Mathf.Clamp(SoldierDamageMax + amount, soldierDamageMin, 2f);
+    public void ModifySoldierDamageMax(float amount) => SoldierDamageMax = Mathf.Clamp(SoldierDamageMax + amount, SoldierDamageMin, float.MaxValue);
 
     // Debug helper methods
     public void SetCurrentEnemyHP(float hp)

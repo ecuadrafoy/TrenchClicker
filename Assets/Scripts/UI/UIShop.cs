@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 public class UIShop : MonoBehaviour
 {
@@ -9,19 +10,9 @@ public class UIShop : MonoBehaviour
     [SerializeField] private Button shopToggleButton;
     [SerializeField] private TextMeshProUGUI shopToggleButtonText;
 
-    [Header("Upgrade: Basic Soldiers Upgrade")]
-    [SerializeField] private GameObject soldiersUpgradeItem;
-    [SerializeField] private TextMeshProUGUI soldiersUpgradeNameText;
-    [SerializeField] private TextMeshProUGUI soldiersUpgradeDescText;
-    [SerializeField] private TextMeshProUGUI soldiersUpgradeCostText;
-    [SerializeField] private Button soldiersUpgradeBuyButton;
-
-    [Header("Upgrade: Soldiers Battalion Upgrade")]
-    [SerializeField] private GameObject soldiersBulkUpgradeItem;
-    [SerializeField] private TextMeshProUGUI soldiersBulkUpgradeNameText;
-    [SerializeField] private TextMeshProUGUI soldiersBulkUpgradeDescText;
-    [SerializeField] private TextMeshProUGUI soldiersBulkUpgradeCostText;
-    [SerializeField] private Button soldiersBulkUpgradeBuyButton;
+    [Header("Upgrade Items")]
+    [SerializeField] private Transform upgradeContainer;
+    [SerializeField] private GameObject upgradeItemPrefab;
     private bool isShopOpen = false;
     void Start()
     {
@@ -30,14 +21,7 @@ public class UIShop : MonoBehaviour
         {
             shopToggleButton.onClick.AddListener(ToggleShop);
         }
-        if (soldiersUpgradeBuyButton != null)
-        {
-            soldiersUpgradeBuyButton.onClick.AddListener(OnBuySoldiersUpgrade);
-        }
-        if (soldiersBulkUpgradeBuyButton != null)
-        {
-            soldiersBulkUpgradeBuyButton.onClick.AddListener(OnBuySoldiersBulkUpgrade);
-        }
+        PopulateShop();
         UpdateShopUI();
 
     }
@@ -89,23 +73,10 @@ public class UIShop : MonoBehaviour
     private void UpdateShopUI()
     {
         if (UpgradeManager.Instance == null) return;
-        // Update Small Soldiers Upgrade (+5)
-        UpdateUpgradeUI(
-            UpgradeManager.Instance.GetSoldiersPerClickUpgrade(),
-            soldiersUpgradeNameText,
-            soldiersUpgradeDescText,
-            soldiersUpgradeCostText,
-            soldiersUpgradeBuyButton
-        );
-
-        // Update Bulk Soldiers Upgrade (+100)
-        UpdateUpgradeUI(
-            UpgradeManager.Instance.GetSoldiersBulkUpgrade(),
-            soldiersBulkUpgradeNameText,
-            soldiersBulkUpgradeDescText,
-            soldiersBulkUpgradeCostText,
-            soldiersBulkUpgradeBuyButton
-        );
+        foreach (UpgradeUIItem item in upgradeUIITems)
+        {
+            UpdateUpgradeUI(item.upgrade, item.nameText, item.descText, item.costText, item.buyButton);
+        }
     }
     private void UpdateUpgradeUI(UpgradeData upgrade, TextMeshProUGUI nameText, TextMeshProUGUI descText, TextMeshProUGUI costText, Button buyButton)
     {
@@ -123,7 +94,13 @@ public class UIShop : MonoBehaviour
         // Update button state
         float currentCurrency = GameManager.Instance.GetgroundGained();
         bool canAfford = upgrade.CanPurchase(currentCurrency);
-        buyButton.interactable = canAfford;
+        bool canApply = true;
+        if (upgrade.statTarget == StatTarget.DamageMin)
+        {
+            float newMin = GameManager.Instance.SoldierDamageMin + upgrade.effectValue;
+            canApply = newMin <= GameManager.Instance.SoldierDamageMax * 0.5f;
+        }
+        buyButton.interactable = canAfford && canApply;
 
         // Show purchase level
         if (upgrade.timesPurchased > 0)
@@ -132,30 +109,48 @@ public class UIShop : MonoBehaviour
         }
     }
 
-    private void OnBuySoldiersUpgrade()
+    private void OnBuyUpgrade(UpgradeData upgrade)
     {
-        if (UpgradeManager.Instance == null) return;
-        UpgradeData soldiersUpgrade = UpgradeManager.Instance.GetSoldiersPerClickUpgrade();
-        if (soldiersUpgrade != null)
+        if (UpgradeManager.Instance == null || upgrade == null) return;
+        bool success = UpgradeManager.Instance.TryPurchaseUpgrade(upgrade);
+        if (success)
         {
-            bool success = UpgradeManager.Instance.TryPurchaseUpgrade(soldiersUpgrade);
-            if (success)
-            {
-                UpdateShopUI();
-            }
+            UpdateShopUI();
         }
     }
-    private void OnBuySoldiersBulkUpgrade()
+    private void PopulateShop()
     {
-        if (UpgradeManager.Instance == null) return;
-        UpgradeData soldiersBulkUpgrade = UpgradeManager.Instance.GetSoldiersBulkUpgrade();
-        if (soldiersBulkUpgrade != null)
+        if (UpgradeManager.Instance == null || upgradeItemPrefab == null) return;
+        UpgradeData[] upgrades = UpgradeManager.Instance.GetUpgrades();
+        foreach (UpgradeData upgrade in upgrades)
         {
-            bool success = UpgradeManager.Instance.TryPurchaseUpgrade(soldiersBulkUpgrade);
-            if (success)
+            if (upgrade == null) continue;
+            GameObject item = Instantiate(upgradeItemPrefab, upgradeContainer);
+            TextMeshProUGUI[] texts = item.GetComponentsInChildren<TextMeshProUGUI>();
+            Button buyButton = item.GetComponentInChildren<Button>();
+            UpgradeUIItem uiItem = new UpgradeUIItem
             {
-                UpdateShopUI();
+                upgrade = upgrade,
+                nameText = texts.Length > 0 ? texts[0] : null,
+                descText = texts.Length > 1 ? texts[1] : null,
+                costText = texts.Length > 2 ? texts[2] : null,
+                buyButton = buyButton
+            };
+            if (buyButton != null)
+            {
+                UpgradeData capturedUpgrade = upgrade;
+                buyButton.onClick.AddListener(() => OnBuyUpgrade(capturedUpgrade));
             }
+            upgradeUIITems.Add(uiItem);
         }
     }
+    private class UpgradeUIItem
+    {
+        public UpgradeData upgrade;
+        public TextMeshProUGUI nameText;
+        public TextMeshProUGUI descText;
+        public TextMeshProUGUI costText;
+        public Button buyButton;
+    }
+    private List<UpgradeUIItem> upgradeUIITems = new List<UpgradeUIItem>();
 }

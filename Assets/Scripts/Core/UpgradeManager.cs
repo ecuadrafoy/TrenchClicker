@@ -6,8 +6,7 @@ public class UpgradeManager : MonoBehaviour
     public static UpgradeManager Instance { get; private set; }
 
     [Header("Available Upgrades")]
-    [SerializeField] private UpgradeData soldiersPerClickUpgrade;
-    [SerializeField] private UpgradeData soldiersBulkUpgrade;
+    [SerializeField] private UpgradeData[] upgrades;
 
     void Awake()
     {
@@ -31,6 +30,16 @@ public class UpgradeManager : MonoBehaviour
         {
             Debug.Log($"Cannot purchase {upgrade.upgradeName} Need {upgrade.GetCurrentCost():F1} inches, have {currentCurrency: F1}");
             return false;
+        }
+        // Check if DamageMin would exceed 50% of DamageMax after purchase
+        if (upgrade.statTarget == StatTarget.DamageMin)
+        {
+            float newMin = GameManager.Instance.SoldierDamageMin + upgrade.effectValue;
+            if (newMin > GameManager.Instance.SoldierDamageMax * 0.5f)
+            {
+                Debug.Log("Need better weapons first! Min damage cannot exceed 50% of max damage.");
+                return false;
+            }
         }
         float cost = upgrade.GetCurrentCost();
         GameManager.Instance.SpendGroundGained(cost);
@@ -76,6 +85,7 @@ public class UpgradeManager : MonoBehaviour
                 break;
         }
     }
-    public UpgradeData GetSoldiersPerClickUpgrade() => soldiersPerClickUpgrade;
-    public UpgradeData GetSoldiersBulkUpgrade() => soldiersBulkUpgrade;
+
+    public UpgradeData[] GetUpgrades() => upgrades;
+
 }
