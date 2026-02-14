@@ -36,24 +36,26 @@ Click to generate soldiers who automatically assault enemy trenches. Upgrade you
 ```
 Assets/
 ├── Scripts/
-│   ├── Core/           # Game managers, core game loop
-│   ├── Combat/         # Soldier behavior, combat mechanics
-│   ├── UI/             # Click handlers, HUD
-│   ├── Progression/    # Upgrades, progression
-│   └── Utils/          # Helper functions
+│   ├── Core/           # GameManager (game loop, state, combat, weather)
+│   ├── Combat/         # Combat-related scripts (future)
+│   ├── UI/             # UIManager, ClickButton, UIShop, DebugOverlay
+│   ├── Progression/    # UpgradeManager
+│   └── Data/           # ScriptableObjects (UpgradeData), WeatherData
 ├── Prefabs/
+│   └── UI/             # UpgradeItemPrefab
 ├── Scenes/
 └── Settings/
 ```
 
 ## What's Been Built
 
-- **Game Manager** - Core singleton managing game state, assault timing, and combat
+- **Game Manager** - Core singleton managing game state, assault timing, combat, and weather
 - **Assault System** - 90-second timed assaults with reinforcement mechanics
-- **Combat System** - Soldier damage calculation and trench health management
-- **Ground Progression** - Tracks ground gained in inches per engagement
-- **Difficulty Scaling** - Enemy trenches increase in difficulty with each capture
-- **UI System** - Click handlers and HUD updates for real-time feedback
-- **Reinforcement Mechanics** - Enemy trenches receive HP reinforcements after assault time expires
-
-
+- **Combat System** - Randomized soldier damage (min-max range), trench HP management
+- **Ground Progression** - Tracks ground gained in inches/feet per engagement
+- **Difficulty Scaling** - Enemy trenches increase HP by 20% with each capture, reinforcement rate scales proportionally
+- **Upgrade System** - 4 upgrades purchasable with ground gained (soldiers per click x2, damage min, damage max), dynamic shop UI
+- **Weather System** - Markov chain-based weather that changes during assaults, affecting soldier damage and enemy reinforcement rates (Clear/Partly Cloudy/Overcast/Light Rain/Heavy Rain)
+- **UI System** - Click handlers, HUD, weather display with toast notifications, assault timer with color warnings
+- **Reinforcement Mechanics** - Enemy trenches receive HP reinforcements after assault timer expires (weather-modified)
+- **Debug Overlay** - F1 toggle, runtime game state inspection, sliders/buttons for testing, weather controls

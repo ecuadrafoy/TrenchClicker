@@ -34,6 +34,10 @@ public class DebugOverlay : MonoBehaviour
     private Text damageRangeText;
     private Text trenchesCapturedText;
     private Text reinforcementRateText;
+    private Text weatherStateText;
+    private Text weatherEffText;
+    private Text weatherTableText;
+    private Text weatherDamageText;
 
     private Slider damageMinSlider;
     private Slider damageMaxSlider;
@@ -123,6 +127,10 @@ public class DebugOverlay : MonoBehaviour
         damageRangeText = AddLabel(scrollContent, "Damage: 0.0-1.0", ref y);
         trenchesCapturedText = AddLabel(scrollContent, "Trenches: 0", ref y);
         reinforcementRateText = AddLabel(scrollContent, "Reinf. Rate: 0/s", ref y);
+        weatherStateText = AddLabel(scrollContent, "Weather: Clear", ref y);
+        weatherEffText = AddLabel(scrollContent, "Weather Eff: 100%", ref y);
+        weatherTableText = AddLabel(scrollContent, "Weather Table: 0/0", ref y);
+        weatherDamageText = AddLabel(scrollContent, "Last Dmg: 0.0 raw → 0.0 mod", ref y);
         y += SECTION_SPACING;
 
         // === CONTROLS SECTION ===
@@ -144,6 +152,7 @@ public class DebugOverlay : MonoBehaviour
         AddButton(scrollContent, "Reset Timer", ref y, OnResetTimer);
         AddButton(scrollContent, "Toggle Reinforcements", ref y, OnToggleReinforcements);
         AddButton(scrollContent, "Set HP to 1", ref y, OnSetHPTo1);
+        AddButton(scrollContent, "Cycle Weather", ref y, OnCycleWeather);
 
         // Set content size
         var contentRT = scrollContent.GetComponent<RectTransform>();
@@ -512,6 +521,10 @@ public class DebugOverlay : MonoBehaviour
         damageRangeText.text = $"Damage: {gm.SoldierDamageMin:F1} - {gm.SoldierDamageMax:F1}";
         trenchesCapturedText.text = $"Trenches: {gm.GetTrenchesCaptured()}";
         reinforcementRateText.text = $"Reinf. Rate: {gm.GetReinforcementRate():F1}/s";
+        weatherStateText.text = $"Weather: {WeatherConfig.GetDisplayName(gm.GetCurrentWeather())}";
+        weatherEffText.text = $"Weather Eff: {gm.GetWeatherEffectiveness() * 100f:F0}%";
+        weatherTableText.text = $"Weather Table: {gm.GetWeatherTableIndex()}/{gm.GetWeatherTableCount()}";
+        weatherDamageText.text = $"Last Dmg: {gm.GetLastRawDamage():F1} raw → {gm.GetLastWeatherDamage():F1} mod";
     }
 
     // --- CONTROL CALLBACKS ---
@@ -576,5 +589,14 @@ public class DebugOverlay : MonoBehaviour
     private void OnSetHPTo1()
     {
         GameManager.Instance?.SetCurrentEnemyHP(1f);
+    }
+
+    private void OnCycleWeather()
+    {
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+        // Cycle through enum values: Clear -> PartlyCloudy -> ... -> HeavyRain -> Clear
+        int next = ((int)gm.GetCurrentWeather() + 1) % 5;
+        gm.SetWeather((WeatherState)next);
     }
 }

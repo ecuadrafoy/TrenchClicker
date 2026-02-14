@@ -1,9 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEditor.Rendering;
 using System.Collections;
-using NUnit.Framework;
 
 public class UIManager : MonoBehaviour
 {
@@ -15,6 +13,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Button clickButton;
     [SerializeField] private Button startAssaultButton;
+
+    [Header("Weather Display")]
+    [SerializeField] private TextMeshProUGUI weatherText;
+    [SerializeField] private TextMeshProUGUI weatherNotificationText;
 
     [Header("Warning Settings")]
     [SerializeField] private Color normalTimerColor = Color.white;
@@ -47,6 +49,10 @@ public class UIManager : MonoBehaviour
         if (startAssaultButton != null)
         {
             startAssaultButton.onClick.AddListener(OnStartAssaultButtonPressed);
+        }
+        if (weatherNotificationText != null)
+        {
+            weatherNotificationText.alpha = 0f;
         }
         UpdateUI();
 
@@ -123,6 +129,7 @@ public class UIManager : MonoBehaviour
             }
         }
         UpdateTimerDisplay();
+        UpdateWeatherDisplay();
     }
     private void UpdateTimerDisplay()
     {
@@ -189,5 +196,53 @@ public class UIManager : MonoBehaviour
                 buttonAnim.TriggerPunchAnimation();
             }
         }
+    }
+
+    // --- Weather Display ---
+    private void UpdateWeatherDisplay()
+    {
+        if (weatherText == null) return;
+
+        if (!GameManager.Instance.IsAssaultActive())
+        {
+            weatherText.text = "";
+            return;
+        }
+
+        float eff = GameManager.Instance.GetWeatherEffectiveness();
+        string name = WeatherConfig.GetDisplayName(GameManager.Instance.GetCurrentWeather());
+        weatherText.text = $"{Mathf.RoundToInt(eff * 100)}% - {name}";
+
+        // Color based on effectiveness
+        if (eff >= 0.9f)
+            weatherText.color = Color.green;
+        else if (eff >= 0.7f)
+            weatherText.color = Color.yellow;
+        else
+            weatherText.color = Color.red;
+    }
+
+    public void ShowWeatherNotification(string message)
+    {
+        if (weatherNotificationText == null) return;
+        StopCoroutine(nameof(FadeNotification));
+        weatherNotificationText.text = message;
+        weatherNotificationText.alpha = 1f;
+        StartCoroutine(FadeNotification());
+    }
+
+    private IEnumerator FadeNotification()
+    {
+        yield return new WaitForSeconds(1f);
+
+        float elapsed = 0f;
+        float fadeDuration = 1f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            weatherNotificationText.alpha = 1f - (elapsed / fadeDuration);
+            yield return null;
+        }
+        weatherNotificationText.alpha = 0f;
     }
 }

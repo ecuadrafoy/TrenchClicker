@@ -1,6 +1,5 @@
 
-
-
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -21,6 +20,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float reinforcementRate = 5f; //HP per seconds
     [SerializeField] private float maxReinforcementMultiplier = 1.5f;
 
+    [Header("Weather Settings")]
+    [SerializeField] private int minWeatherChanges = 4;
+    [SerializeField] private int maxWeatherChanges = 6;
+
     private float currentEnemyHP;
     private float maxReinforcedHP;
     private float currentAssaultTime = 0f;
@@ -29,7 +32,12 @@ public class GameManager : MonoBehaviour
     private float currentReinforcementRate;
     private int trenchesCaptured = 0;
 
-
+    // Weather system
+    private WeatherState currentWeather = WeatherState.Clear;
+    private List<WeatherTransition> weatherTable;
+    private int weatherTableIndex = 0;
+    private float lastRawDamage = 0f;
+    private float lastWeatherDamage = 0f;
 
 
     void Awake()
@@ -58,6 +66,9 @@ public class GameManager : MonoBehaviour
         // Increment assault timer
         currentAssaultTime += Time.deltaTime;
 
+        // Advance weather table
+        UpdateWeather();
+
         // Check if timer expired and reinforcements should start
         if (currentAssaultTime >= assaultDuration && !isReinforcing)
         {
@@ -80,6 +91,7 @@ public class GameManager : MonoBehaviour
         currentEnemyHP = (float)enemyTrenchHP;
         maxReinforcedHP = enemyTrenchHP * maxReinforcementMultiplier;
         currentReinforcementRate = reinforcementRate;
+        GenerateWeatherTable();
         Debug.Log("Game Initialized. Enemy Trench HP: " + currentEnemyHP);
     }
     public void OnSoldierClick()
@@ -113,8 +125,12 @@ public class GameManager : MonoBehaviour
     }
     private void ProcessReinforcements()
     {
+        // Weather slows reinforcements at 50% of the attacker penalty
+        float weatherPenalty = 1f - GetWeatherEffectiveness();
+        float reinforcementModifier = 1f - (weatherPenalty * 0.5f);
+
         float previousHP = currentEnemyHP;
-        currentEnemyHP = Mathf.Min(currentEnemyHP + currentReinforcementRate * Time.deltaTime, maxReinforcedHP);
+        currentEnemyHP = Mathf.Min(currentEnemyHP + currentReinforcementRate * reinforcementModifier * Time.deltaTime, maxReinforcedHP);
 
         // Debug.Log($"Enemy reinforced: +{(currentEnemyHP - previousHP):F2} HP. Current: {currentEnemyHP:F1}/{maxReinforcedHP:F1}");
     }
@@ -125,9 +141,12 @@ public class GameManager : MonoBehaviour
         {
             damageDealt += GetRandomSoldierDamage();
         }
+        lastRawDamage = damageDealt;
+        damageDealt *= GetWeatherEffectiveness();
+        lastWeatherDamage = damageDealt;
         currentEnemyHP -= damageDealt;
 
-        Debug.Log($"Sent {soldiersSent} soldiers, dealt {damageDealt:F1} damage. Enemy HP: {currentEnemyHP:F1}/{enemyTrenchHP}");
+        Debug.Log($"Sent {soldiersSent} soldiers, dealt {damageDealt:F1} damage ({WeatherConfig.GetDisplayName(currentWeather)}). Enemy HP: {currentEnemyHP:F1}/{enemyTrenchHP}");
 
         if (currentEnemyHP <= 0)
         {
@@ -155,6 +174,7 @@ public class GameManager : MonoBehaviour
 
         // Scale reinforcement rate with difficulty
         currentReinforcementRate = reinforcementRate * (enemyTrenchHP / 100f);
+        GenerateWeatherTable();
         Debug.Log($"Next trench HP: {enemyTrenchHP}. Reinforcement rate: {currentReinforcementRate:F1}/sec");
     }
 
@@ -163,6 +183,8 @@ public class GameManager : MonoBehaviour
         isAssaultActive = false;
         isReinforcing = false;
         currentAssaultTime = 0f;
+        currentWeather = WeatherState.Clear;
+        weatherTableIndex = 0;
     }
 
     private float GetRandomSoldierDamage()
@@ -236,5 +258,57 @@ public class GameManager : MonoBehaviour
     public void SetSoldierDamageMax(float value) => SoldierDamageMax = Mathf.Clamp(value, SoldierDamageMin, 100f);
     public void SetSoldiersPerClick(int value) => soldiersPerClick = Mathf.Max(1, value);
     public void SetIsReinforcing(bool value) => isReinforcing = value;
+
+    // --- Weather System ---
+    public WeatherState GetCurrentWeather() => currentWeather;
+    public float GetWeatherEffectiveness() => WeatherConfig.GetEffectiveness(currentWeather);
+    public int GetWeatherTableCount() => weatherTable != null ? weatherTable.Count : 0;
+    public int GetWeatherTableIndex() => weatherTableIndex;
+    public void SetWeather(WeatherState weather) => currentWeather = weather;
+    public float GetLastRawDamage() => lastRawDamage;
+    public float GetLastWeatherDamage() => lastWeatherDamage;
+
+    private void GenerateWeatherTable()
+    {
+        weatherTable = new List<WeatherTransition>();
+        weatherTableIndex = 0;
+        currentWeather = WeatherState.Clear;
+
+        // First entry: Clear at time 0
+        weatherTable.Add(new WeatherTransition(0f, WeatherState.Clear));
+
+        WeatherState state = WeatherState.Clear;
+        float time = 0f;
+        float maxTime = assaultDuration + 600f; // cover assault + 10 min reinforcement buffer
+
+        while (time < maxTime)
+        {
+            float interval = assaultDuration / Random.Range((float)minWeatherChanges, (float)maxWeatherChanges);
+            time += interval;
+            state = WeatherConfig.SampleNextState(state, Random.value);
+            weatherTable.Add(new WeatherTransition(time, state));
+        }
+    }
+
+    private void UpdateWeather()
+    {
+        if (weatherTable == null || weatherTable.Count == 0) return;
+
+        // Check if we should advance to the next weather entry
+        int nextIndex = weatherTableIndex + 1;
+        if (nextIndex < weatherTable.Count && currentAssaultTime >= weatherTable[nextIndex].timestamp)
+        {
+            weatherTableIndex = nextIndex;
+            WeatherState newWeather = weatherTable[nextIndex].weather;
+            if (newWeather != currentWeather)
+            {
+                currentWeather = newWeather;
+                string name = WeatherConfig.GetDisplayName(currentWeather);
+                float eff = WeatherConfig.GetEffectiveness(currentWeather);
+                Debug.Log($"Weather changed: {name} (effectiveness: {eff * 100f:F0}%)");
+                UIManager.Instance?.ShowWeatherNotification($"Weather: {name}");
+            }
+        }
+    }
 
 }
