@@ -38,6 +38,10 @@ public class DebugOverlay : MonoBehaviour
     private Text weatherEffText;
     private Text weatherTableText;
     private Text weatherDamageText;
+    private Text eliteReserveDbgText;
+    private Text eliteActiveText;
+    private Text eliteTimerText;
+    private Text eliteDeployedText;
 
     private Slider damageMinSlider;
     private Slider damageMaxSlider;
@@ -131,6 +135,10 @@ public class DebugOverlay : MonoBehaviour
         weatherEffText = AddLabel(scrollContent, "Weather Eff: 100%", ref y);
         weatherTableText = AddLabel(scrollContent, "Weather Table: 0/0", ref y);
         weatherDamageText = AddLabel(scrollContent, "Last Dmg: 0.0 raw → 0.0 mod", ref y);
+        eliteReserveDbgText = AddLabel(scrollContent, "Elite Reserve: 0", ref y);
+        eliteActiveText = AddLabel(scrollContent, "Elites Active: false", ref y);
+        eliteTimerText = AddLabel(scrollContent, "Elite Timer: 0.0/0.0s", ref y);
+        eliteDeployedText = AddLabel(scrollContent, "Elite Deployed: 0", ref y);
         y += SECTION_SPACING;
 
         // === CONTROLS SECTION ===
@@ -153,6 +161,8 @@ public class DebugOverlay : MonoBehaviour
         AddButton(scrollContent, "Toggle Reinforcements", ref y, OnToggleReinforcements);
         AddButton(scrollContent, "Set HP to 1", ref y, OnSetHPTo1);
         AddButton(scrollContent, "Cycle Weather", ref y, OnCycleWeather);
+        AddButton(scrollContent, "Deploy Elites", ref y, OnDeployElites);
+        AddButton(scrollContent, "Add 50 Elite Reserve", ref y, OnAddEliteReserve);
 
         // Set content size
         var contentRT = scrollContent.GetComponent<RectTransform>();
@@ -525,6 +535,10 @@ public class DebugOverlay : MonoBehaviour
         weatherEffText.text = $"Weather Eff: {gm.GetWeatherEffectiveness() * 100f:F0}%";
         weatherTableText.text = $"Weather Table: {gm.GetWeatherTableIndex()}/{gm.GetWeatherTableCount()}";
         weatherDamageText.text = $"Last Dmg: {gm.GetLastRawDamage():F1} raw → {gm.GetLastWeatherDamage():F1} mod";
+        eliteReserveDbgText.text = $"Elite Reserve: {gm.GetEliteTroopReserve()}";
+        eliteActiveText.text = $"Elites Active: {gm.IsElitesActive()}";
+        eliteTimerText.text = $"Elite Timer: {gm.GetEliteDeploymentTimer():F1}/{gm.GetEliteDeploymentDuration():F1}s";
+        eliteDeployedText.text = $"Elite Deployed: {gm.GetEliteDeployedCount()}";
     }
 
     // --- CONTROL CALLBACKS ---
@@ -598,5 +612,15 @@ public class DebugOverlay : MonoBehaviour
         // Cycle through enum values: Clear -> PartlyCloudy -> ... -> HeavyRain -> Clear
         int next = ((int)gm.GetCurrentWeather() + 1) % 5;
         gm.SetWeather((WeatherState)next);
+    }
+
+    private void OnDeployElites()
+    {
+        GameManager.Instance?.DeployEliteTroops();
+    }
+
+    private void OnAddEliteReserve()
+    {
+        GameManager.Instance?.AddEliteReserve(50);
     }
 }

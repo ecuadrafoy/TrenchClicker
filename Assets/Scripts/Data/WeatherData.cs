@@ -31,6 +31,18 @@ public static class WeatherConfig
             default: return 1.0f;
         }
     }
+    public static float GetEliteEffectiveness(WeatherState weather)
+    {
+        switch (weather)
+        {
+            case WeatherState.Clear: return 1.0f;
+            case WeatherState.PartlyCloudy: return 1.0f;
+            case WeatherState.Overcast: return 1.0f;
+            case WeatherState.LightRain: return 0.85f;
+            case WeatherState.HeavyRain: return 0.7f;
+            default: return 1.0f;
+        }
+    }
 
     public static string GetDisplayName(WeatherState weather)
     {

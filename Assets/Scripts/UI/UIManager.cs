@@ -29,6 +29,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float warningThreshold = 30f;
     [SerializeField] private float criticalThreshold = 10f;
 
+    [Header("Elite Troops UI")]
+    [SerializeField] private Button deployElitesButton;
+    [SerializeField] private Image eliteButtonFill;
+    [SerializeField] private TextMeshProUGUI eliteButtonText;
+    [SerializeField] private TextMeshProUGUI eliteReserveText;
+
     private bool isShowingWarning = false;
     void Awake()
     {
@@ -53,6 +59,14 @@ public class UIManager : MonoBehaviour
         if (startAssaultButton != null)
         {
             startAssaultButton.onClick.AddListener(OnStartAssaultButtonPressed);
+        }
+        if (deployElitesButton != null)
+        {
+            deployElitesButton.onClick.AddListener(OnDeployElitesButtonPressed);
+        }
+        if (eliteButtonFill != null)
+        {
+            eliteButtonFill.fillAmount = 0f;
         }
         if (weatherNotificationText != null)
         {
@@ -84,6 +98,12 @@ public class UIManager : MonoBehaviour
             if (clickButton != null)
             {
                 clickButton.interactable = assaultActive;
+            }
+            if (deployElitesButton != null)
+            {
+                deployElitesButton.interactable = assaultActive &&
+                !GameManager.Instance.IsElitesActive()
+                && GameManager.Instance.GetEliteTroopReserve() > 0;
             }
 
         }
@@ -135,6 +155,7 @@ public class UIManager : MonoBehaviour
         UpdateTimerDisplay();
         UpdateWeatherDisplay();
         UpdateForecastDisplay();
+        UpdateEliteDisplay();
     }
     private void UpdateTimerDisplay()
     {
@@ -190,6 +211,10 @@ public class UIManager : MonoBehaviour
     private void OnStartAssaultButtonPressed()
     {
         GameManager.Instance?.StartAssaultButton();
+    }
+    private void OnDeployElitesButtonPressed()
+    {
+        GameManager.Instance?.DeployEliteTroops();
     }
     public void TriggerClickButtonAnimation()
     {
@@ -250,7 +275,43 @@ public class UIManager : MonoBehaviour
 
         }
     }
-
+    private void UpdateEliteDisplay()
+    {
+        if (GameManager.Instance == null) return;
+        //Reserve counter
+        if (eliteReserveText != null)
+        {
+            int reserve = GameManager.Instance.GetEliteTroopReserve();
+            eliteReserveText.text = $"Elite Reserve: {reserve}";
+        }
+        //Button fill and text
+        if (eliteButtonText != null)
+        {
+            if (GameManager.Instance.IsElitesActive())
+            {
+                float timer = GameManager.Instance.GetEliteDeploymentTimer();
+                eliteButtonText.text = $"{timer:F1}s";
+                if (eliteButtonFill != null)
+                {
+                    float duration = GameManager.Instance.GetEliteDeploymentDuration();
+                    eliteButtonFill.fillAmount = duration > 0f ? timer / duration : 0f;
+                }
+            }
+            else
+            {
+                eliteButtonText.text = GameManager.Instance.GetEliteTroopReserve() > 0
+                ? "Deploy Stormtroopers" : "No reserves";
+                if (eliteButtonFill != null)
+                {
+                    eliteButtonFill.fillAmount = 0f;
+                }
+            }
+        }
+    }
+    public void ShowEliteSurvivalNotification(int survivors, int deployed)
+    {
+        ShowWeatherNotification($"Storm Troopers: {survivors}/{deployed} survived");
+    }
     public void ShowWeatherNotification(string message)
     {
         if (weatherNotificationText == null) return;

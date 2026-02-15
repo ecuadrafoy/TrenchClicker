@@ -700,7 +700,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ReflectorNet">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@4352588d4ce3\Plugins\com.IvanMurzak.ReflectorNet\ReflectorNet.dll</HintPath>
+      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@dbc394866437\Plugins\com.IvanMurzak.ReflectorNet\ReflectorNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Text.Encodings.Web">
@@ -728,7 +728,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="McpPlugin">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@4352588d4ce3\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.dll</HintPath>
+      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@dbc394866437\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.IO.Pipelines">
@@ -768,7 +768,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="McpPlugin.Common">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@4352588d4ce3\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.Common.dll</HintPath>
+      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@dbc394866437\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Net.ServerSentEvents">
