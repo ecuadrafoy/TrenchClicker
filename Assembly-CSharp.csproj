@@ -55,8 +55,10 @@
     <Compile Include="Assets\Scripts\Progression\WeatherStationManager.cs" />
     <Compile Include="Assets\Scripts\Core\InputManager.cs" />
     <Compile Include="Assets\Scripts\Core\UpgradeManager.cs" />
+    <Compile Include="Assets\Scripts\Core\WeatherManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIShop.cs" />
     <Compile Include="Assets\Scripts\UI\DebugOverlay.cs" />
+    <Compile Include="Assets\Scripts\Core\EliteTroopManager.cs" />
     <Compile Include="Assets\PlayerInputActions.cs" />
     <Compile Include="Assets\Scripts\Data\UpgradeData.cs" />
     <Compile Include="Assets\Scripts\UI\ClickButton.cs" />
