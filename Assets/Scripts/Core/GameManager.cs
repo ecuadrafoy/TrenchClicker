@@ -185,6 +185,8 @@ public class GameManager : MonoBehaviour
         currentReinforcementRate = reinforcementRate * (enemyTrenchHP / 100f);
         WeatherManager.Instance.GenerateWeatherTable(assaultDuration);
         Debug.Log($"Next trench HP: {enemyTrenchHP}. Reinforcement rate: {currentReinforcementRate:F1}/sec");
+
+        UIManager.Instance?.UpdateUI();
     }
 
     private void ResetAssault()
