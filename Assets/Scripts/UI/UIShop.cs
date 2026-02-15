@@ -13,6 +13,10 @@ public class UIShop : MonoBehaviour
     [Header("Upgrade Items")]
     [SerializeField] private Transform upgradeContainer;
     [SerializeField] private GameObject upgradeItemPrefab;
+
+    [Header("Other shops")]
+    [SerializeField] private UISpecialShop specialShop;
+
     private bool isShopOpen = false;
     void Start()
     {
@@ -57,13 +61,14 @@ public class UIShop : MonoBehaviour
     }
     private void OpenShop()
     {
+        specialShop?.ClosePanel();
         isShopOpen = true;
         shopPanel.SetActive(true);
         shopToggleButtonText.text = "Close Shop";
         UpdateShopUI();
         Debug.Log("Shop opened");
     }
-    private void CloseShop()
+    public void CloseShop()
     {
         isShopOpen = false;
         shopPanel.SetActive(false);
@@ -108,7 +113,6 @@ public class UIShop : MonoBehaviour
             nameText.text += $" (Level {upgrade.timesPurchased})";
         }
     }
-
     private void OnBuyUpgrade(UpgradeData upgrade)
     {
         if (UpgradeManager.Instance == null || upgrade == null) return;

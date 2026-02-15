@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.AI;
 
 public class UIManager : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class UIManager : MonoBehaviour
     [Header("Weather Display")]
     [SerializeField] private TextMeshProUGUI weatherText;
     [SerializeField] private TextMeshProUGUI weatherNotificationText;
+
+    [Header("Weather Forecast")]
+    [SerializeField] private TextMeshProUGUI forecastText;
 
     [Header("Warning Settings")]
     [SerializeField] private Color normalTimerColor = Color.white;
@@ -130,6 +134,7 @@ public class UIManager : MonoBehaviour
         }
         UpdateTimerDisplay();
         UpdateWeatherDisplay();
+        UpdateForecastDisplay();
     }
     private void UpdateTimerDisplay()
     {
@@ -220,6 +225,30 @@ public class UIManager : MonoBehaviour
             weatherText.color = Color.yellow;
         else
             weatherText.color = Color.red;
+    }
+    private void UpdateForecastDisplay()
+    {
+        if (forecastText == null) return;
+        if (WeatherStationManager.Instance == null || WeatherStationManager.Instance.GetLevel() == 0)
+        {
+            forecastText.text = "";
+            return;
+        }
+        string message = WeatherStationManager.Instance.GetForecast(out ForecastRisk risk);
+        forecastText.text = message;
+        switch (risk)
+        {
+            case ForecastRisk.Low:
+                forecastText.color = Color.green;
+                break;
+            case ForecastRisk.Medium:
+                forecastText.color = Color.yellow;
+                break;
+            case ForecastRisk.High:
+                forecastText.color = Color.red;
+                break;
+
+        }
     }
 
     public void ShowWeatherNotification(string message)

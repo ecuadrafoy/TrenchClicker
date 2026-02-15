@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 
 public enum WeatherState { Clear, PartlyCloudy, Overcast, LightRain, HeavyRain }
+public enum ForecastRisk { Low, Medium, High }
 
 public struct WeatherTransition
 {

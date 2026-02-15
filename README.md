@@ -38,8 +38,8 @@ Assets/
 ├── Scripts/
 │   ├── Core/           # GameManager (game loop, state, combat, weather)
 │   ├── Combat/         # Combat-related scripts (future)
-│   ├── UI/             # UIManager, ClickButton, UIShop, DebugOverlay
-│   ├── Progression/    # UpgradeManager
+│   ├── UI/             # UIManager, ClickButton, UIShop, UISpecialShop, DebugOverlay
+│   ├── Progression/    # UpgradeManager, WeatherStationManager
 │   └── Data/           # ScriptableObjects (UpgradeData), WeatherData
 ├── Prefabs/
 │   └── UI/             # UpgradeItemPrefab
@@ -56,6 +56,8 @@ Assets/
 - **Difficulty Scaling** - Enemy trenches increase HP by 20% with each capture, reinforcement rate scales proportionally
 - **Upgrade System** - 4 upgrades purchasable with ground gained (soldiers per click x2, damage min, damage max), dynamic shop UI
 - **Weather System** - Markov chain-based weather that changes during assaults, affecting soldier damage and enemy reinforcement rates (Clear/Partly Cloudy/Overcast/Light Rain/Heavy Rain)
-- **UI System** - Click handlers, HUD, weather display with toast notifications, assault timer with color warnings
+- **Weather Station Upgrade** - 3-level purchasable upgrade that progressively reveals weather forecasts (vague hints → risk categories → exact percentages), housed in a separate Special Shop
+- **Special Shop** - Separate shop panel for unique upgrades (Weather Station), with mutual exclusivity against the regular shop
+- **UI System** - Click handlers, HUD, weather display with toast notifications and forecast text, assault timer with color warnings
 - **Reinforcement Mechanics** - Enemy trenches receive HP reinforcements after assault timer expires (weather-modified)
 - **Debug Overlay** - F1 toggle, runtime game state inspection, sliders/buttons for testing, weather controls

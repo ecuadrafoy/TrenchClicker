@@ -267,6 +267,9 @@ public class GameManager : MonoBehaviour
     public void SetWeather(WeatherState weather) => currentWeather = weather;
     public float GetLastRawDamage() => lastRawDamage;
     public float GetLastWeatherDamage() => lastWeatherDamage;
+    public float GetCurrentAssaultTime() => currentAssaultTime;
+    public List<WeatherTransition> GetWeatherTable() => weatherTable;
+
 
     private void GenerateWeatherTable()
     {

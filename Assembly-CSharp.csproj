@@ -52,6 +52,7 @@
     <Analyzer Include="E:\projectsUnity\TrenchClicker\Library\PackageCache\org.nuget.microsoft.codeanalysis.analyzers@bcf103d84432\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Progression\WeatherStationManager.cs" />
     <Compile Include="Assets\Scripts\Core\InputManager.cs" />
     <Compile Include="Assets\Scripts\Core\UpgradeManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIShop.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Assets\Scripts\UI\ClickButton.cs" />
     <Compile Include="Assets\Scripts\Data\WeatherData.cs" />
     <Compile Include="Assets\Scripts\Core\GameManager.cs" />
+    <Compile Include="Assets\Scripts\UI\UISpecialShop.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
   </ItemGroup>
   <ItemGroup>
