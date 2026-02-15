@@ -1,5 +1,4 @@
 
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -20,16 +19,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float reinforcementRate = 5f; //HP per seconds
     [SerializeField] private float maxReinforcementMultiplier = 1.5f;
 
-    [Header("Weather Settings")]
-    [SerializeField] private int minWeatherChanges = 4;
-    [SerializeField] private int maxWeatherChanges = 6;
-
-    [Header("Elite Troops Settings")]
-    [SerializeField] private int startingEliteReserve = 50;
-    [SerializeField] private int minElitesEarnedPerTrench = 10;
-    [SerializeField] private int maxElitesEarnedPerTrench = 20;
-    [SerializeField] private float eliteDeploymentDurationPer100 = 3f;
-
     private float currentEnemyHP;
     private float maxReinforcedHP;
     private float currentAssaultTime = 0f;
@@ -38,19 +27,9 @@ public class GameManager : MonoBehaviour
     private float currentReinforcementRate;
     private int trenchesCaptured = 0;
 
-    // Weather system
-    private WeatherState currentWeather = WeatherState.Clear;
-    private List<WeatherTransition> weatherTable;
-    private int weatherTableIndex = 0;
+    // Combat diagnostics
     private float lastRawDamage = 0f;
     private float lastWeatherDamage = 0f;
-
-    // Elite troops system
-    private int eliteTroopReserve;
-    private bool elitesActive = false;
-    private float eliteDeploymentTimer = 0f;
-    private int eliteDeployedCount = 0;
-    private float eliteDeploymentDuration = 0f;
 
 
     void Awake()
@@ -80,9 +59,20 @@ public class GameManager : MonoBehaviour
         currentAssaultTime += Time.deltaTime;
 
         // Advance weather table
-        UpdateWeather();
-        UpdateEliteDeployment();
-        ProcessEliteCombat();
+        WeatherManager.Instance.UpdateWeather(currentAssaultTime);
+
+        // Elite troops: update timer then apply damage
+        EliteTroopManager.Instance.UpdateDeployment();
+        float eliteDamage = EliteTroopManager.Instance.GetFrameDamage();
+        if (eliteDamage > 0f)
+        {
+            currentEnemyHP -= eliteDamage;
+            if (currentEnemyHP <= 0f)
+            {
+                CaptureTrench();
+                return;
+            }
+        }
 
         // Check if timer expired and reinforcements should start
         if (currentAssaultTime >= assaultDuration && !isReinforcing)
@@ -106,8 +96,8 @@ public class GameManager : MonoBehaviour
         currentEnemyHP = (float)enemyTrenchHP;
         maxReinforcedHP = enemyTrenchHP * maxReinforcementMultiplier;
         currentReinforcementRate = reinforcementRate;
-        GenerateWeatherTable();
-        eliteTroopReserve = startingEliteReserve;
+        WeatherManager.Instance.GenerateWeatherTable(assaultDuration);
+        EliteTroopManager.Instance.Initialize();
         Debug.Log("Game Initialized. Enemy Trench HP: " + currentEnemyHP);
     }
     public void OnSoldierClick()
@@ -142,13 +132,11 @@ public class GameManager : MonoBehaviour
     private void ProcessReinforcements()
     {
         // Weather slows reinforcements at 50% of the attacker penalty
-        float weatherPenalty = 1f - GetWeatherEffectiveness();
+        float weatherPenalty = 1f - WeatherManager.Instance.GetEffectiveness();
         float reinforcementModifier = 1f - (weatherPenalty * 0.5f);
 
         float previousHP = currentEnemyHP;
         currentEnemyHP = Mathf.Min(currentEnemyHP + currentReinforcementRate * reinforcementModifier * Time.deltaTime, maxReinforcedHP);
-
-        // Debug.Log($"Enemy reinforced: +{(currentEnemyHP - previousHP):F2} HP. Current: {currentEnemyHP:F1}/{maxReinforcedHP:F1}");
     }
     private void ProcessCombat(int soldiersSent)
     {
@@ -158,11 +146,12 @@ public class GameManager : MonoBehaviour
             damageDealt += GetRandomSoldierDamage();
         }
         lastRawDamage = damageDealt;
-        damageDealt *= GetWeatherEffectiveness();
+        damageDealt *= WeatherManager.Instance.GetEffectiveness();
         lastWeatherDamage = damageDealt;
         currentEnemyHP -= damageDealt;
 
-        Debug.Log($"Sent {soldiersSent} soldiers, dealt {damageDealt:F1} damage ({WeatherConfig.GetDisplayName(currentWeather)}). Enemy HP: {currentEnemyHP:F1}/{enemyTrenchHP}");
+        string weatherName = WeatherConfig.GetDisplayName(WeatherManager.Instance.GetCurrentWeather());
+        Debug.Log($"Sent {soldiersSent} soldiers, dealt {damageDealt:F1} damage ({weatherName}). Enemy HP: {currentEnemyHP:F1}/{enemyTrenchHP}");
 
         if (currentEnemyHP <= 0)
         {
@@ -182,11 +171,9 @@ public class GameManager : MonoBehaviour
         groundGained += 120f;
         trenchesCaptured++;
         // End elite deployment with victory bonus (before ResetAssault clears weather)
-        if (elitesActive) EndEliteDeployment(true);
+        EliteTroopManager.Instance.OnTrenchCaptured();
         // Award new elite troops
-        int elitesEarned = Random.Range(minElitesEarnedPerTrench, maxElitesEarnedPerTrench + 1);
-        eliteTroopReserve += elitesEarned;
-        Debug.Log($"Earned {elitesEarned} elite troops. Reserve: {eliteTroopReserve}");
+        EliteTroopManager.Instance.AwardNewElites();
 
         ResetAssault();
         // Increase difficulty for next trench
@@ -196,7 +183,7 @@ public class GameManager : MonoBehaviour
 
         // Scale reinforcement rate with difficulty
         currentReinforcementRate = reinforcementRate * (enemyTrenchHP / 100f);
-        GenerateWeatherTable();
+        WeatherManager.Instance.GenerateWeatherTable(assaultDuration);
         Debug.Log($"Next trench HP: {enemyTrenchHP}. Reinforcement rate: {currentReinforcementRate:F1}/sec");
     }
 
@@ -205,8 +192,7 @@ public class GameManager : MonoBehaviour
         isAssaultActive = false;
         isReinforcing = false;
         currentAssaultTime = 0f;
-        currentWeather = WeatherState.Clear;
-        weatherTableIndex = 0;
+        WeatherManager.Instance.ResetWeather();
     }
 
     private float GetRandomSoldierDamage()
@@ -281,133 +267,8 @@ public class GameManager : MonoBehaviour
     public void SetSoldiersPerClick(int value) => soldiersPerClick = Mathf.Max(1, value);
     public void SetIsReinforcing(bool value) => isReinforcing = value;
 
-    // --- Weather System ---
-    public WeatherState GetCurrentWeather() => currentWeather;
-    public float GetWeatherEffectiveness() => WeatherConfig.GetEffectiveness(currentWeather);
-    public int GetWeatherTableCount() => weatherTable != null ? weatherTable.Count : 0;
-    public int GetWeatherTableIndex() => weatherTableIndex;
-    public void SetWeather(WeatherState weather) => currentWeather = weather;
+    // Combat diagnostics (stays here — these are combat data, not weather state)
     public float GetLastRawDamage() => lastRawDamage;
     public float GetLastWeatherDamage() => lastWeatherDamage;
     public float GetCurrentAssaultTime() => currentAssaultTime;
-    public List<WeatherTransition> GetWeatherTable() => weatherTable;
-
-    // --- Elite Troops ---                                                                                                                        
-    public int GetEliteTroopReserve() => eliteTroopReserve;
-    public bool IsElitesActive() => elitesActive;
-    public float GetEliteDeploymentTimer() => eliteDeploymentTimer;
-    public float GetEliteDeploymentDuration() => eliteDeploymentDuration;
-    public int GetEliteDeployedCount() => eliteDeployedCount;
-    public float GetEliteWeatherEffectiveness() => WeatherConfig.GetEliteEffectiveness(currentWeather);
-    public void AddEliteReserve(int amount) => eliteTroopReserve += amount;
-    public void DeployEliteTroops()
-    {
-        if (!isAssaultActive || elitesActive || eliteTroopReserve <= 0) return;
-        eliteDeployedCount = eliteTroopReserve;
-        eliteTroopReserve = 0;
-        eliteDeploymentDuration = (eliteDeployedCount / 100f) * eliteDeploymentDurationPer100;
-        eliteDeploymentTimer = eliteDeploymentDuration;
-        elitesActive = true;
-        Debug.Log($"Deployed{eliteDeployedCount} elite troops for {eliteDeploymentDuration:F1}s");
-
-    }
-    private void ProcessEliteCombat()
-    {
-        if (!elitesActive) return;
-        // Each elite deals 1 total damage over the deployment, so DPS = count/duration
-        float dps = eliteDeployedCount / eliteDeploymentDuration;
-        float frameDamage = dps * Time.deltaTime * GetEliteWeatherEffectiveness();
-        currentEnemyHP -= frameDamage;
-        if (currentEnemyHP <= 0f)
-        {
-            CaptureTrench();
-        }
-    }
-    private void UpdateEliteDeployment()
-    {
-        if (!elitesActive) return;
-        eliteDeploymentTimer -= Time.deltaTime;
-        if (eliteDeploymentTimer <= 0f)
-        {
-            EndEliteDeployment(false);
-        }
-    }
-    private int CalculateEliteSurvivors(bool victory)
-    {
-        float survivalRate = 0.7f;
-        if (victory) survivalRate += 0.1f;
-        //Weather modifier based on current weather at end of deployment
-        switch (currentWeather)
-        {
-            case WeatherState.HeavyRain:
-                survivalRate -= 0.2f;
-                break;
-            case WeatherState.LightRain:
-                survivalRate -= 0.1f;
-                break;
-            case WeatherState.Overcast:
-            case WeatherState.PartlyCloudy:
-            case WeatherState.Clear:
-                survivalRate += 0.1f;
-                break;
-        }
-        survivalRate = Mathf.Clamp01(survivalRate);
-        return Mathf.RoundToInt(eliteDeployedCount * survivalRate);
-    }
-    private void EndEliteDeployment(bool victory)
-    {
-        if (!elitesActive) return;
-        int survivors = CalculateEliteSurvivors(victory);
-        eliteTroopReserve += survivors;
-        Debug.Log($"Elite deployment ended. {survivors}/{eliteDeployedCount} survived (victory: {victory})");
-        UIManager.Instance?.ShowEliteSurvivalNotification(survivors, eliteDeployedCount);
-        elitesActive = false;
-        eliteDeploymentTimer = 0f;
-        eliteDeployedCount = 0;
-    }
-
-
-    private void GenerateWeatherTable()
-    {
-        weatherTable = new List<WeatherTransition>();
-        weatherTableIndex = 0;
-        currentWeather = WeatherState.Clear;
-
-        // First entry: Clear at time 0
-        weatherTable.Add(new WeatherTransition(0f, WeatherState.Clear));
-
-        WeatherState state = WeatherState.Clear;
-        float time = 0f;
-        float maxTime = assaultDuration + 600f; // cover assault + 10 min reinforcement buffer
-
-        while (time < maxTime)
-        {
-            float interval = assaultDuration / Random.Range((float)minWeatherChanges, (float)maxWeatherChanges);
-            time += interval;
-            state = WeatherConfig.SampleNextState(state, Random.value);
-            weatherTable.Add(new WeatherTransition(time, state));
-        }
-    }
-
-    private void UpdateWeather()
-    {
-        if (weatherTable == null || weatherTable.Count == 0) return;
-
-        // Check if we should advance to the next weather entry
-        int nextIndex = weatherTableIndex + 1;
-        if (nextIndex < weatherTable.Count && currentAssaultTime >= weatherTable[nextIndex].timestamp)
-        {
-            weatherTableIndex = nextIndex;
-            WeatherState newWeather = weatherTable[nextIndex].weather;
-            if (newWeather != currentWeather)
-            {
-                currentWeather = newWeather;
-                string name = WeatherConfig.GetDisplayName(currentWeather);
-                float eff = WeatherConfig.GetEffectiveness(currentWeather);
-                Debug.Log($"Weather changed: {name} (effectiveness: {eff * 100f:F0}%)");
-                UIManager.Instance?.ShowWeatherNotification($"Weather: {name}");
-            }
-        }
-    }
-
 }

@@ -43,7 +43,7 @@ public class WeatherStationManager : MonoBehaviour
     {
         risk = ForecastRisk.Low;
         if (currentLevel == 0) return "";
-        List<WeatherTransition> table = GameManager.Instance.GetWeatherTable();
+        List<WeatherTransition> table = WeatherManager.Instance.GetWeatherTable();
         if (table == null || table.Count == 0) return "";
         float currentTime = GameManager.Instance.GetCurrentAssaultTime();
         float windowEnd = currentTime + GameManager.Instance.GetAssaultDuration() / 3f;

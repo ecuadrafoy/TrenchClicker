@@ -102,8 +102,8 @@ public class UIManager : MonoBehaviour
             if (deployElitesButton != null)
             {
                 deployElitesButton.interactable = assaultActive &&
-                !GameManager.Instance.IsElitesActive()
-                && GameManager.Instance.GetEliteTroopReserve() > 0;
+                !EliteTroopManager.Instance.IsElitesActive()
+                && EliteTroopManager.Instance.GetEliteTroopReserve() > 0;
             }
 
         }
@@ -214,7 +214,7 @@ public class UIManager : MonoBehaviour
     }
     private void OnDeployElitesButtonPressed()
     {
-        GameManager.Instance?.DeployEliteTroops();
+        EliteTroopManager.Instance?.DeployEliteTroops();
     }
     public void TriggerClickButtonAnimation()
     {
@@ -239,8 +239,8 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        float eff = GameManager.Instance.GetWeatherEffectiveness();
-        string name = WeatherConfig.GetDisplayName(GameManager.Instance.GetCurrentWeather());
+        float eff = WeatherManager.Instance.GetEffectiveness();
+        string name = WeatherConfig.GetDisplayName(WeatherManager.Instance.GetCurrentWeather());
         weatherText.text = $"{Mathf.RoundToInt(eff * 100)}% - {name}";
 
         // Color based on effectiveness
@@ -277,29 +277,29 @@ public class UIManager : MonoBehaviour
     }
     private void UpdateEliteDisplay()
     {
-        if (GameManager.Instance == null) return;
+        if (EliteTroopManager.Instance == null) return;
         //Reserve counter
         if (eliteReserveText != null)
         {
-            int reserve = GameManager.Instance.GetEliteTroopReserve();
+            int reserve = EliteTroopManager.Instance.GetEliteTroopReserve();
             eliteReserveText.text = $"Elite Reserve: {reserve}";
         }
         //Button fill and text
         if (eliteButtonText != null)
         {
-            if (GameManager.Instance.IsElitesActive())
+            if (EliteTroopManager.Instance.IsElitesActive())
             {
-                float timer = GameManager.Instance.GetEliteDeploymentTimer();
+                float timer = EliteTroopManager.Instance.GetEliteDeploymentTimer();
                 eliteButtonText.text = $"{timer:F1}s";
                 if (eliteButtonFill != null)
                 {
-                    float duration = GameManager.Instance.GetEliteDeploymentDuration();
+                    float duration = EliteTroopManager.Instance.GetEliteDeploymentDuration();
                     eliteButtonFill.fillAmount = duration > 0f ? timer / duration : 0f;
                 }
             }
             else
             {
-                eliteButtonText.text = GameManager.Instance.GetEliteTroopReserve() > 0
+                eliteButtonText.text = EliteTroopManager.Instance.GetEliteTroopReserve() > 0
                 ? "Deploy Stormtroopers" : "No reserves";
                 if (eliteButtonFill != null)
                 {

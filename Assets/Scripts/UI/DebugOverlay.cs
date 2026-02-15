@@ -531,14 +531,16 @@ public class DebugOverlay : MonoBehaviour
         damageRangeText.text = $"Damage: {gm.SoldierDamageMin:F1} - {gm.SoldierDamageMax:F1}";
         trenchesCapturedText.text = $"Trenches: {gm.GetTrenchesCaptured()}";
         reinforcementRateText.text = $"Reinf. Rate: {gm.GetReinforcementRate():F1}/s";
-        weatherStateText.text = $"Weather: {WeatherConfig.GetDisplayName(gm.GetCurrentWeather())}";
-        weatherEffText.text = $"Weather Eff: {gm.GetWeatherEffectiveness() * 100f:F0}%";
-        weatherTableText.text = $"Weather Table: {gm.GetWeatherTableIndex()}/{gm.GetWeatherTableCount()}";
+        var wm = WeatherManager.Instance;
+        weatherStateText.text = $"Weather: {WeatherConfig.GetDisplayName(wm.GetCurrentWeather())}";
+        weatherEffText.text = $"Weather Eff: {wm.GetEffectiveness() * 100f:F0}%";
+        weatherTableText.text = $"Weather Table: {wm.GetWeatherTableIndex()}/{wm.GetWeatherTableCount()}";
         weatherDamageText.text = $"Last Dmg: {gm.GetLastRawDamage():F1} raw → {gm.GetLastWeatherDamage():F1} mod";
-        eliteReserveDbgText.text = $"Elite Reserve: {gm.GetEliteTroopReserve()}";
-        eliteActiveText.text = $"Elites Active: {gm.IsElitesActive()}";
-        eliteTimerText.text = $"Elite Timer: {gm.GetEliteDeploymentTimer():F1}/{gm.GetEliteDeploymentDuration():F1}s";
-        eliteDeployedText.text = $"Elite Deployed: {gm.GetEliteDeployedCount()}";
+        var em = EliteTroopManager.Instance;
+        eliteReserveDbgText.text = $"Elite Reserve: {em.GetEliteTroopReserve()}";
+        eliteActiveText.text = $"Elites Active: {em.IsElitesActive()}";
+        eliteTimerText.text = $"Elite Timer: {em.GetEliteDeploymentTimer():F1}/{em.GetEliteDeploymentDuration():F1}s";
+        eliteDeployedText.text = $"Elite Deployed: {em.GetEliteDeployedCount()}";
     }
 
     // --- CONTROL CALLBACKS ---
@@ -607,20 +609,20 @@ public class DebugOverlay : MonoBehaviour
 
     private void OnCycleWeather()
     {
-        var gm = GameManager.Instance;
-        if (gm == null) return;
+        var wm = WeatherManager.Instance;
+        if (wm == null) return;
         // Cycle through enum values: Clear -> PartlyCloudy -> ... -> HeavyRain -> Clear
-        int next = ((int)gm.GetCurrentWeather() + 1) % 5;
-        gm.SetWeather((WeatherState)next);
+        int next = ((int)wm.GetCurrentWeather() + 1) % 5;
+        wm.SetWeather((WeatherState)next);
     }
 
     private void OnDeployElites()
     {
-        GameManager.Instance?.DeployEliteTroops();
+        EliteTroopManager.Instance?.DeployEliteTroops();
     }
 
     private void OnAddEliteReserve()
     {
-        GameManager.Instance?.AddEliteReserve(50);
+        EliteTroopManager.Instance?.AddEliteReserve(50);
     }
 }
