@@ -1,10 +1,10 @@
 # Trench Clicker
 
-A World War I-themed clicker/autobattler game where players send soldiers across no man's land to capture enemy trenches. Every click generates soldiers, and progress is measured in inches of ground gained.
+A World War I-themed clicker/autobattler game where players send soldiers across no man's land to capture enemy trenches. Every click generates soldiers, progress is measured in inches of ground gained, and upgrades are purchased with Requisition Points earned on trench capture.
 
 ## About
 
-Click to generate soldiers who automatically assault enemy trenches. Upgrade your forces to deal more damage, generate soldiers faster, and improve equipment. Break through defensive lines, capture territory, and progress through increasingly challenging trench positions.
+Click to generate soldiers who automatically assault enemy trenches. Capture trenches to earn Requisition Points, then spend them on upgrades to deal more damage, generate soldiers faster, and improve equipment. Break through defensive lines, capture territory, and progress through increasingly challenging trench positions.
 
 ## Getting Started
 
@@ -23,8 +23,9 @@ Click to generate soldiers who automatically assault enemy trenches. Upgrade you
 
 - **Click** to generate soldiers
 - Soldiers automatically **attack** the enemy trench
-- **Upgrade** your forces between assaults
-- **Capture** trenches to gain ground
+- **Capture** trenches to earn **Requisition Points** (bonus RP for fast captures)
+- **Upgrade** your forces between assaults using RP
+- Track your permanent **ground gained** as a progression stat
 
 ## Tech Stack
 
@@ -54,9 +55,9 @@ Assets/
 - **Elite Troop Manager** - Singleton managing elite troop reserves, deployment, survival calculations, and trench capture rewards
 - **Assault System** - 90-second timed assaults with reinforcement mechanics
 - **Combat System** - Randomized soldier damage (min-max range), trench HP management
-- **Ground Progression** - Tracks ground gained in inches/feet per engagement
+- **Dual-Stat Economy** - Ground gained (permanent progression in inches/feet) + Requisition Points (spendable currency earned on trench capture with speed and efficiency bonuses)
 - **Difficulty Scaling** - Enemy trenches increase HP by 20% with each capture, reinforcement rate scales proportionally
-- **Upgrade System** - 4 upgrades purchasable with ground gained (soldiers per click x2, damage min, damage max), dynamic shop UI
+- **Upgrade System** - 4 upgrades purchasable with Requisition Points (soldiers per click x2, damage min, damage max), dynamic shop UI
 - **Weather System** - Markov chain-based weather that changes during assaults, affecting soldier damage and enemy reinforcement rates (Clear/Partly Cloudy/Overcast/Light Rain/Heavy Rain)
 - **Elite Troops (Storm Troopers)** - Deployable elite soldiers dealing automatic per-frame damage during assaults, with survival mechanics and weather resistance
 - **Weather Station Upgrade** - 3-level purchasable upgrade that progressively reveals weather forecasts (vague hints → risk categories → exact percentages), housed in a separate Special Shop
