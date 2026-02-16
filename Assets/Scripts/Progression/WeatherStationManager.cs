@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+
 public class WeatherStationManager : MonoBehaviour
 {
     public static WeatherStationManager Instance { get; private set; }
@@ -46,6 +47,8 @@ public class WeatherStationManager : MonoBehaviour
         List<WeatherTransition> table = WeatherManager.Instance.GetWeatherTable();
         if (table == null || table.Count == 0) return "";
         float currentTime = GameManager.Instance.GetCurrentAssaultTime();
+        float timeUntilChange = WeatherManager.Instance.GetTimeUntilNextChange(currentTime);
+        string countdownPrefix = timeUntilChange > 0f ? $"Next change in {Mathf.CeilToInt(timeUntilChange)}s: " : "No further changes";
         float windowEnd = currentTime + GameManager.Instance.GetAssaultDuration() / 3f;
         // Calculate fraction of upcoming 30s window spent in rain states
         float rainTime = 0f;
@@ -77,18 +80,15 @@ public class WeatherStationManager : MonoBehaviour
         switch (currentLevel)
         {
             case 1:
-                // vague hints
-                if (risk == ForecastRisk.High) return "Sky looks threatening";
-                else if (risk == ForecastRisk.Medium) return "Clouds gathering..";
-                else return "Weather looks stable.";
+                if (risk == ForecastRisk.High) return countdownPrefix + "Sky looks threatening";
+                else if (risk == ForecastRisk.Medium) return countdownPrefix + "Clouds gathering..";
+                else return countdownPrefix + "Weather looks stable.";
             case 2:
-                // Named risk category
-                return $"Weather Risk: {risk}";
+                return countdownPrefix + $"Weather Risk: {risk}";
             case 3:
-                // Exact numbers
                 float avgEffectiveness = CalculateAverageEffectiveness(table, currentTime, windowEnd);
                 int rainPercent = Mathf.RoundToInt(rainFraction * 100f);
-                return $"{rainPercent}% chance of rain | Avg Effectiveness: {Mathf.RoundToInt(avgEffectiveness * 100f)}%";
+                return countdownPrefix + $"{rainPercent}% chance of rain | Avg Effectiveness: {Mathf.RoundToInt(avgEffectiveness * 100f)}%";
             default:
                 return "";
         }

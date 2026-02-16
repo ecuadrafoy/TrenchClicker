@@ -35,6 +35,13 @@ public class WeatherManager : MonoBehaviour
     public int GetWeatherTableIndex() => weatherTableIndex;
     public List<WeatherTransition> GetWeatherTable() => weatherTable;
     public void SetWeather(WeatherState weather) => currentWeather = weather;
+    public float GetTimeUntilNextChange(float currentAssaultTime)
+    {
+        if (weatherTable == null || weatherTable.Count == 0) return -1f;
+        int nextIndex = weatherTableIndex + 1;
+        if (nextIndex >= weatherTable.Count) return -1f;
+        return weatherTable[nextIndex].timestamp - currentAssaultTime;
+    }
 
     public void GenerateWeatherTable(float assaultDuration)
     {
