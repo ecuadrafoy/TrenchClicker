@@ -7,24 +7,14 @@ public class UIShop : MonoBehaviour
 {
     [Header("Shop Panel")]
     [SerializeField] private GameObject shopPanel;
-    [SerializeField] private Button shopToggleButton;
-    [SerializeField] private TextMeshProUGUI shopToggleButtonText;
 
     [Header("Upgrade Items")]
     [SerializeField] private Transform upgradeContainer;
     [SerializeField] private GameObject upgradeItemPrefab;
 
-    [Header("Other shops")]
-    [SerializeField] private UISpecialShop specialShop;
-
-    private bool isShopOpen = false;
     void Start()
     {
-        shopPanel.SetActive(false);
-        if (shopToggleButton != null)
-        {
-            shopToggleButton.onClick.AddListener(ToggleShop);
-        }
+
         PopulateShop();
         UpdateShopUI();
 
@@ -33,47 +23,10 @@ public class UIShop : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (shopToggleButton != null)
-        {
-            bool canOpenShop = !GameManager.Instance.IsAssaultActive();
-            shopToggleButton.interactable = canOpenShop;
-            if (!canOpenShop && isShopOpen)
-            {
-                CloseShop();
-            }
-        }
-        if (isShopOpen)
         {
             UpdateShopUI();
         }
 
-    }
-    private void ToggleShop()
-    {
-        if (isShopOpen)
-        {
-            CloseShop();
-        }
-        else
-        {
-            OpenShop();
-        }
-    }
-    private void OpenShop()
-    {
-        specialShop?.ClosePanel();
-        isShopOpen = true;
-        shopPanel.SetActive(true);
-        shopToggleButtonText.text = "Close Shop";
-        UpdateShopUI();
-        Debug.Log("Shop opened");
-    }
-    public void CloseShop()
-    {
-        isShopOpen = false;
-        shopPanel.SetActive(false);
-        shopToggleButtonText.text = "Open Shop";
-        Debug.Log("Shop closed");
     }
     private void UpdateShopUI()
     {

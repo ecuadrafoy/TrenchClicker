@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.AI;
+
 
 public class UIManager : MonoBehaviour
 {
@@ -36,6 +36,22 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI eliteButtonText;
     [SerializeField] private TextMeshProUGUI eliteReserveText;
 
+    [Header("Phase Visibility")]
+    [SerializeField] private GameObject combatGroup;
+    [SerializeField] private GameObject shopButton;
+    [SerializeField] private GameObject shopContainer;
+    [SerializeField] private GameObject regularShopContent;
+    [SerializeField] private GameObject specialShopContent;
+    [SerializeField] private Button upgradesTabButton;
+    [SerializeField] private Button specialTabButton;
+
+    [Header("Shop Animation")]
+    [SerializeField] private float shopSlideDuration = 0.3f;
+    [SerializeField] private float shopSlideDistance = 450f;
+
+    private RectTransform shopContainerRect;
+    private Coroutine shopSlideCoroutine;
+    private bool isShopOpen = false;
     private bool isShowingWarning = false;
     void Awake()
     {
@@ -73,6 +89,23 @@ public class UIManager : MonoBehaviour
         {
             weatherNotificationText.alpha = 0f;
         }
+        if (upgradesTabButton != null)
+            upgradesTabButton.onClick.AddListener(() => SwitchTab(true));
+        if (specialTabButton != null)
+            specialTabButton.onClick.AddListener(() => SwitchTab(false));
+        if (shopButton != null)
+            shopButton.GetComponent<Button>().onClick.AddListener(ToggleShop);
+        if (shopContainer != null)
+        {
+            shopContainerRect = shopContainer.GetComponent<RectTransform>();
+            // Position off-screen to the right, then deactivate
+            Vector2 pos = shopContainerRect.anchoredPosition;
+            pos.x = shopSlideDistance;
+            shopContainerRect.anchoredPosition = pos;
+            shopContainer.SetActive(false);
+        }
+        if (combatGroup != null)
+            combatGroup.SetActive(false);
         UpdateUI();
 
     }
@@ -86,30 +119,92 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance != null)
-        {
-            bool assaultActive = GameManager.Instance.IsAssaultActive();
+        if (GameManager.Instance == null) return;
 
-            // Start assault button only available when NOT in assault
-            if (startAssaultButton != null)
-            {
-                startAssaultButton.interactable = !assaultActive;
-            }
-            //Click button only available DURING assault
-            if (clickButton != null)
-            {
-                clickButton.interactable = assaultActive;
-            }
-            if (deployElitesButton != null)
-            {
-                deployElitesButton.interactable = assaultActive &&
+        bool assaultActive = GameManager.Instance.IsAssaultActive();
+
+        // Phase visibility
+        if (combatGroup != null)
+            combatGroup.SetActive(assaultActive);
+        if (shopButton != null)
+            shopButton.SetActive(!assaultActive);
+
+        // Slide shop closed when assault starts
+        if (assaultActive && isShopOpen)
+            CloseShop();
+
+        // Start assault button — visible always, but only interactable in prep
+        if (startAssaultButton != null)
+            startAssaultButton.interactable = !assaultActive;
+
+        // Deploy elites button interactability (visibility handled by combatGroup)
+        if (deployElitesButton != null)
+        {
+            deployElitesButton.interactable = assaultActive &&
                 !EliteTroopManager.Instance.IsElitesActive()
                 && EliteTroopManager.Instance.GetEliteTroopReserve() > 0;
-            }
-
         }
 
 
+    }
+    private void ToggleShop()
+    {
+        if (shopContainerRect == null) return;
+        isShopOpen = !isShopOpen;
+        if (shopSlideCoroutine != null)
+            StopCoroutine(shopSlideCoroutine);
+        shopSlideCoroutine = StartCoroutine(SlideShop(isShopOpen));
+    }
+    public void CloseShop()
+    {
+        if (!isShopOpen) return;
+        isShopOpen = false;
+        if (shopSlideCoroutine != null)
+            StopCoroutine(shopSlideCoroutine);
+        shopSlideCoroutine = StartCoroutine(SlideShop(false));
+    }
+    private IEnumerator SlideShop(bool open)
+    {
+        // Activate before sliding in
+        if (open)
+        {
+            shopContainer.SetActive(true);
+            SwitchTab(true);
+        }
+
+        float startX = shopContainerRect.anchoredPosition.x;
+        float targetX = open ? 0f : shopSlideDistance;
+        float elapsed = 0f;
+
+        while (elapsed < shopSlideDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / shopSlideDuration);
+            // Cubic ease-out: fast start, smooth deceleration
+            t = 1f - Mathf.Pow(1f - t, 3);
+            Vector2 pos = shopContainerRect.anchoredPosition;
+            pos.x = Mathf.Lerp(startX, targetX, t);
+            shopContainerRect.anchoredPosition = pos;
+            yield return null;
+        }
+
+        // Snap to exact target
+        Vector2 finalPos = shopContainerRect.anchoredPosition;
+        finalPos.x = targetX;
+        shopContainerRect.anchoredPosition = finalPos;
+
+        // Deactivate after sliding out
+        if (!open)
+            shopContainer.SetActive(false);
+
+        shopSlideCoroutine = null;
+    }
+    private void SwitchTab(bool showRegular)
+    {
+        if (regularShopContent != null)
+            regularShopContent.SetActive(showRegular);
+        if (specialShopContent != null)
+            specialShopContent.SetActive(!showRegular);
     }
     private void OnClickButtonPressed()
     {

@@ -6,8 +6,6 @@ public class UISpecialShop : MonoBehaviour
 {
     [Header("Panel")]
     [SerializeField] private GameObject specialShopPanel;
-    [SerializeField] private Button specialShopToggleButton;
-    [SerializeField] private TextMeshProUGUI specialShopToggleButtonText;
 
     [Header("Weather Station")]
     [SerializeField] private TextMeshProUGUI weatherStationNameText;
@@ -15,20 +13,9 @@ public class UISpecialShop : MonoBehaviour
     [SerializeField] private TextMeshProUGUI weatherStationCostText;
     [SerializeField] private Button weatherStationBuyButton;
 
-    [Header("Other Shops")]
-    [SerializeField] private UIShop regularShop;
-
-    private bool isOpen = false;
 
     void Start()
     {
-        specialShopPanel.SetActive(false);
-
-        if (specialShopToggleButton != null)
-        {
-            specialShopToggleButton.onClick.AddListener(TogglePanel);
-        }
-
         if (weatherStationBuyButton != null)
         {
             weatherStationBuyButton.onClick.AddListener(OnBuyWeatherStation);
@@ -39,45 +26,7 @@ public class UISpecialShop : MonoBehaviour
 
     void Update()
     {
-        if (specialShopToggleButton != null)
-        {
-            bool canOpen = !GameManager.Instance.IsAssaultActive();
-            specialShopToggleButton.interactable = canOpen;
-
-            if (!canOpen && isOpen)
-            {
-                ClosePanel();
-            }
-        }
-
-        if (isOpen)
-        {
-            UpdateSpecialShopUI();
-        }
-    }
-
-    private void TogglePanel()
-    {
-        if (isOpen)
-            ClosePanel();
-        else
-            OpenPanel();
-    }
-
-    private void OpenPanel()
-    {
-        regularShop?.CloseShop();
-        isOpen = true;
-        specialShopPanel.SetActive(true);
-        specialShopToggleButtonText.text = "Close Special";
         UpdateSpecialShopUI();
-    }
-
-    public void ClosePanel()
-    {
-        isOpen = false;
-        specialShopPanel.SetActive(false);
-        specialShopToggleButtonText.text = "Special Upgrades";
     }
 
     private void UpdateSpecialShopUI()
