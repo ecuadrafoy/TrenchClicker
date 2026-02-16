@@ -23,12 +23,12 @@ public class UpgradeManager : MonoBehaviour
     public bool TryPurchaseUpgrade(UpgradeData upgrade)
     {
         if (GameManager.Instance == null) return false;
-        float currentCurrency = GameManager.Instance.GetgroundGained();
+        int currentCurrency = GameManager.Instance.GetRequisitionPoints();
 
         // check if can afford
         if (!upgrade.CanPurchase(currentCurrency))
         {
-            Debug.Log($"Cannot purchase {upgrade.upgradeName} Need {upgrade.GetCurrentCost():F1} inches, have {currentCurrency: F1}");
+            Debug.Log($"Cannot purchase {upgrade.upgradeName}. Need {upgrade.GetCurrentCost():F0} RP, have {currentCurrency}");
             return false;
         }
         // Check if DamageMin would exceed 50% of DamageMax after purchase
@@ -42,7 +42,7 @@ public class UpgradeManager : MonoBehaviour
             }
         }
         float cost = upgrade.GetCurrentCost();
-        GameManager.Instance.SpendGroundGained(cost);
+        GameManager.Instance.SpendRequisitionPoints((int)cost);
 
         ApplyUpgrade(upgrade);
 

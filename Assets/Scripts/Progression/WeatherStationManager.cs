@@ -5,7 +5,7 @@ public class WeatherStationManager : MonoBehaviour
 {
     public static WeatherStationManager Instance { get; private set; }
     private int currentLevel = 0;
-    private readonly float[] levelCosts = { 500f, 2000f, 5000f };
+    private readonly int[] levelCosts = { 500, 2000, 5000 };
     void Awake()
     {
         if (Instance == null)
@@ -19,22 +19,22 @@ public class WeatherStationManager : MonoBehaviour
         }
     }
     public int GetLevel() => currentLevel;
-    public float GetNextLevelCost()
+    public int GetNextLevelCost()
     {
-        if (currentLevel >= levelCosts.Length) return 0f;
+        if (currentLevel >= levelCosts.Length) return 0;
         return levelCosts[currentLevel];
     }
     public bool CanUpgrade()
     {
         if (currentLevel >= levelCosts.Length) return false;
-        float cost = levelCosts[currentLevel];
-        return GameManager.Instance.GetgroundGained() >= cost;
+        int cost = levelCosts[currentLevel];
+        return GameManager.Instance.GetRequisitionPoints() >= cost;
     }
     public bool TryUpgrade()
     {
         if (!CanUpgrade()) return false;
-        float cost = levelCosts[currentLevel];
-        GameManager.Instance.SpendGroundGained(cost);
+        int cost = levelCosts[currentLevel];
+        GameManager.Instance.SpendRequisitionPoints(cost);
         currentLevel++;
         Debug.Log($"Weather Station upgraded to level {currentLevel}");
         return true;

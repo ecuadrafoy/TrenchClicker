@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI soldierCountText;
     [SerializeField] private TextMeshProUGUI groundGainedText;
+    [SerializeField] private TextMeshProUGUI requisitionPointsText;
     [SerializeField] private TextMeshProUGUI enemyHPText;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Button clickButton;
@@ -120,7 +121,7 @@ public class UIManager : MonoBehaviour
 
         if (soldierCountText != null)
         {
-            soldierCountText.text = $"Soldiers sent: {GameManager.Instance.GetTotalSoldiers()}";
+            soldierCountText.text = $"Soldiers sent: {GameManager.Instance.GetTotalSoldiersSent()}";
         }
         if (groundGainedText != null)
         {
@@ -134,6 +135,10 @@ public class UIManager : MonoBehaviour
             {
                 groundGainedText.text = $"Ground gained: {inches:F1} inches";
             }
+        }
+        if (requisitionPointsText != null)
+        {
+            requisitionPointsText.text = $"Requisition Points: {GameManager.Instance.GetRequisitionPoints()}";
         }
         if (enemyHPText != null)
         {

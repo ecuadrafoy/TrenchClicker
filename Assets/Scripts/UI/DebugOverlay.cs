@@ -42,6 +42,7 @@ public class DebugOverlay : MonoBehaviour
     private Text eliteActiveText;
     private Text eliteTimerText;
     private Text eliteDeployedText;
+    private Text reqPointsText;
 
     private Slider damageMinSlider;
     private Slider damageMaxSlider;
@@ -139,6 +140,7 @@ public class DebugOverlay : MonoBehaviour
         eliteActiveText = AddLabel(scrollContent, "Elites Active: false", ref y);
         eliteTimerText = AddLabel(scrollContent, "Elite Timer: 0.0/0.0s", ref y);
         eliteDeployedText = AddLabel(scrollContent, "Elite Deployed: 0", ref y);
+        reqPointsText = AddLabel(scrollContent, "Req Points: 0", ref y);
         y += SECTION_SPACING;
 
         // === CONTROLS SECTION ===
@@ -163,6 +165,7 @@ public class DebugOverlay : MonoBehaviour
         AddButton(scrollContent, "Cycle Weather", ref y, OnCycleWeather);
         AddButton(scrollContent, "Deploy Elites", ref y, OnDeployElites);
         AddButton(scrollContent, "Add 50 Elite Reserve", ref y, OnAddEliteReserve);
+        AddButton(scrollContent, "Add 100 RP", ref y, OnAddReqPoints);
 
         // Set content size
         var contentRT = scrollContent.GetComponent<RectTransform>();
@@ -520,7 +523,7 @@ public class DebugOverlay : MonoBehaviour
         var gm = GameManager.Instance;
         if (gm == null) return;
 
-        soldiersText.text = $"Soldiers: {gm.GetTotalSoldiers()}";
+        soldiersText.text = $"Soldiers: {gm.GetTotalSoldiersSent()}";
         groundGainedText.text = $"Ground: {gm.GetgroundGained():F2} in";
         enemyHPText.text = $"Enemy HP: {gm.GetCurrentEnemyHP():F1} / {gm.GetMaxEnemyHP()}";
         maxReinforcedHPText.text = $"Max Reinforced HP: {gm.GetMaxReinforcedHP():F1}";
@@ -529,7 +532,7 @@ public class DebugOverlay : MonoBehaviour
         timeRemainingText.text = $"Time Left: {gm.GetAssaultTimeRemaining():F1}s";
         soldiersPerClickText.text = $"Soldiers/Click: {gm.GetSoldierPerClick()}";
         damageRangeText.text = $"Damage: {gm.SoldierDamageMin:F1} - {gm.SoldierDamageMax:F1}";
-        trenchesCapturedText.text = $"Trenches: {gm.GetTrenchesCaptured()}";
+        trenchesCapturedText.text = $"Trenches: {gm.GettotalTrenchesCaptured()}";
         reinforcementRateText.text = $"Reinf. Rate: {gm.GetReinforcementRate():F1}/s";
         var wm = WeatherManager.Instance;
         weatherStateText.text = $"Weather: {WeatherConfig.GetDisplayName(wm.GetCurrentWeather())}";
@@ -541,6 +544,7 @@ public class DebugOverlay : MonoBehaviour
         eliteActiveText.text = $"Elites Active: {em.IsElitesActive()}";
         eliteTimerText.text = $"Elite Timer: {em.GetEliteDeploymentTimer():F1}/{em.GetEliteDeploymentDuration():F1}s";
         eliteDeployedText.text = $"Elite Deployed: {em.GetEliteDeployedCount()}";
+        reqPointsText.text = $"Req Points: {gm.GetRequisitionPoints()}";
     }
 
     // --- CONTROL CALLBACKS ---
@@ -624,5 +628,10 @@ public class DebugOverlay : MonoBehaviour
     private void OnAddEliteReserve()
     {
         EliteTroopManager.Instance?.AddEliteReserve(50);
+    }
+
+    private void OnAddReqPoints()
+    {
+        GameManager.Instance?.AddRequisitionPoints(100);
     }
 }

@@ -109,10 +109,8 @@ public class UISpecialShop : MonoBehaviour
             };
             weatherStationDescText.text = nextLevelDesc[level];
 
-            float cost = WeatherStationManager.Instance.GetNextLevelCost();
-            weatherStationCostText.text = cost >= 12f
-                ? $"Cost: {(cost / 12f):F1} feet"
-                : $"Cost: {cost:F1} inches";
+            int cost = WeatherStationManager.Instance.GetNextLevelCost();
+            weatherStationCostText.text = $"Cost: {cost} RP";
 
             weatherStationBuyButton.interactable = WeatherStationManager.Instance.CanUpgrade();
         }

@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     [Header("Game State")]
-    [SerializeField] private int totalSoldiers = 0;
+    [SerializeField] private int totalSoldiersSent = 0;
     [SerializeField] private float groundGained = 0f;
     [SerializeField] private int soldiersPerClick = 1;
 
@@ -19,13 +19,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float reinforcementRate = 5f; //HP per seconds
     [SerializeField] private float maxReinforcementMultiplier = 1.5f;
 
+    [Header("Economy")]
+    [SerializeField] private int requisitionPoints = 0;
+    [SerializeField] private int baseRequisitionReward = 50;
+    [SerializeField] private int speedBonusReward = 10;
+    [SerializeField] private int efficiencyBonusReward = 5;
+    [SerializeField] private float warningThreshold = 30f;
+
     private float currentEnemyHP;
     private float maxReinforcedHP;
     private float currentAssaultTime = 0f;
     private bool isAssaultActive = false;
     private bool isReinforcing = false;
     private float currentReinforcementRate;
-    private int trenchesCaptured = 0;
+    private int totalTrenchesCaptured = 0;
 
     // Combat diagnostics
     private float lastRawDamage = 0f;
@@ -107,8 +114,8 @@ public class GameManager : MonoBehaviour
             Debug.Log("Assault not started yet! Click 'Start Assault' first.");
             return;
         }
-        totalSoldiers += soldiersPerClick;
-        Debug.Log($"Soldiers sent: {soldiersPerClick}. Total: {totalSoldiers}");
+        totalSoldiersSent += soldiersPerClick;
+        Debug.Log($"Soldiers sent: {soldiersPerClick}. Total: {totalSoldiersSent}");
 
         // Process combat immediately (for clicker prototype)
         ProcessCombat(soldiersPerClick);
@@ -169,12 +176,12 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Trench Captured!");
         groundGained += 120f;
-        trenchesCaptured++;
+        totalTrenchesCaptured++;
         // End elite deployment with victory bonus (before ResetAssault clears weather)
         EliteTroopManager.Instance.OnTrenchCaptured();
         // Award new elite troops
         EliteTroopManager.Instance.AwardNewElites();
-
+        AwardRequisitionPoints();
         ResetAssault();
         // Increase difficulty for next trench
         enemyTrenchHP = Mathf.RoundToInt(enemyTrenchHP * 1.2f);
@@ -187,6 +194,21 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Next trench HP: {enemyTrenchHP}. Reinforcement rate: {currentReinforcementRate:F1}/sec");
 
         UIManager.Instance?.UpdateUI();
+    }
+    private void AwardRequisitionPoints()
+    {
+        int reward = baseRequisitionReward;
+        float timeRemaining = assaultDuration - currentAssaultTime;
+        //Speed bonus: captured before warning threshold
+        if (timeRemaining > warningThreshold)
+        {
+            reward += speedBonusReward;
+        }
+        //Efficiency bonus: scales with time remaining as a % of assault duration
+        float efficiencyPercent = timeRemaining / assaultDuration;
+        reward += Mathf.RoundToInt(efficiencyBonusReward * efficiencyPercent);
+        requisitionPoints += reward;
+        Debug.Log($"Awarded {reward} RP (base:{baseRequisitionReward} speed:{(timeRemaining > warningThreshold ? speedBonusReward : 0)} efficiency:{Mathf.RoundToInt(efficiencyBonusReward * efficiencyPercent)}).Total: {requisitionPoints}");
     }
 
     private void ResetAssault()
@@ -204,12 +226,7 @@ public class GameManager : MonoBehaviour
         float raw = Random.Range(SoldierDamageMin, SoldierDamageMax);
         return Mathf.Round(raw * 10f) / 10f;
     }
-    public void SpendGroundGained(float amount)
-    {
-        groundGained -= amount;
-        if (groundGained < 0) groundGained = 0;
-        Debug.Log($"Spent {amount:F1} inches. Remaining: {groundGained:F1}");
-    }
+
     public void AddSoldiersPerClick(int amount)
     {
         soldiersPerClick += amount;
@@ -229,7 +246,7 @@ public class GameManager : MonoBehaviour
     }
 
     //Getters for UI
-    public int GetTotalSoldiers() => totalSoldiers;
+    public int GetTotalSoldiersSent() => totalSoldiersSent;
     public float GetgroundGained() => groundGained;
     public float GetCurrentEnemyHP() => currentEnemyHP;
     public int GetMaxEnemyHP() => enemyTrenchHP;
@@ -237,8 +254,14 @@ public class GameManager : MonoBehaviour
     public bool IsAssaultActive() => isAssaultActive;
     public bool IsReinforcing() => isReinforcing;
     public float GetMaxReinforcedHP() => maxReinforcedHP;
-
     public int GetSoldierPerClick() => soldiersPerClick;
+    public int GetRequisitionPoints() => requisitionPoints;
+    public void SpendRequisitionPoints(int amount)
+    {
+        requisitionPoints -= amount;
+        if (requisitionPoints < 0) requisitionPoints = 0;
+        Debug.Log($"Spent {amount} RP. Remaining: {requisitionPoints}");
+    }
 
     public float SoldierDamageMin { get; private set; }
     public float SoldierDamageMax { get; private set; }
@@ -256,12 +279,13 @@ public class GameManager : MonoBehaviour
         }
     }
     public void AddGroundGained(float amount) => groundGained += amount;
+    public void AddRequisitionPoints(int amount) => requisitionPoints += amount;
     public void ResetAssaultTimer()
     {
         currentAssaultTime = 0f;
         isReinforcing = false;
     }
-    public int GetTrenchesCaptured() => trenchesCaptured;
+    public int GettotalTrenchesCaptured() => totalTrenchesCaptured;
     public float GetReinforcementRate() => currentReinforcementRate;
     public float GetAssaultDuration() => assaultDuration;
     public void SetSoldierDamageMin(float value) => SoldierDamageMin = Mathf.Clamp(value, 0f, SoldierDamageMax);

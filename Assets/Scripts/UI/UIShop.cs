@@ -92,12 +92,10 @@ public class UIShop : MonoBehaviour
         descText.text = $"{upgrade.description}\n+{upgrade.effectValue} {upgrade.statTarget}";
 
         float cost = upgrade.GetCurrentCost();
-        costText.text = cost >= 12f
-            ? $"Cost: {(cost / 12f):F1} feet"
-            : $"Cost: {cost:F1} inches";
+        costText.text = $"Cost: {cost:F0} RP";
 
         // Update button state
-        float currentCurrency = GameManager.Instance.GetgroundGained();
+        int currentCurrency = GameManager.Instance.GetRequisitionPoints();
         bool canAfford = upgrade.CanPurchase(currentCurrency);
         bool canApply = true;
         if (upgrade.statTarget == StatTarget.DamageMin)
