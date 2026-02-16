@@ -216,7 +216,7 @@ public class UIManager : MonoBehaviour
 
         if (soldierCountText != null)
         {
-            soldierCountText.text = $"Soldiers sent: {GameManager.Instance.GetTotalSoldiersSent()}";
+            soldierCountText.text = $"<color=#8B8878>Deployed:</color> <color=#E6E2D6>{GameManager.Instance.GetTotalSoldiersSent()}</color>";
         }
         if (groundGainedText != null)
         {
@@ -224,16 +224,16 @@ public class UIManager : MonoBehaviour
             if (inches >= 12f)
             {
                 float feet = inches / 12f;
-                groundGainedText.text = $"Ground gained {feet:F1} feet";
+                groundGainedText.text = $"<color=#8B8878>Ground:</color> <color=#8BC878>{feet:F1} ft</color>";
             }
             else
             {
-                groundGainedText.text = $"Ground gained: {inches:F1} inches";
+                groundGainedText.text = $"<color=#8B8878>Ground:</color> <color=#8BC878>{inches:F1} in</color>";
             }
         }
         if (requisitionPointsText != null)
         {
-            requisitionPointsText.text = $"Requisition Points: {GameManager.Instance.GetRequisitionPoints()}";
+            requisitionPointsText.text = $"<color=#8B8878>RP:</color> <color=#D4C878>{GameManager.Instance.GetRequisitionPoints()}</color>";
         }
         if (enemyHPText != null)
         {
@@ -382,7 +382,7 @@ public class UIManager : MonoBehaviour
         if (eliteReserveText != null)
         {
             int reserve = EliteTroopManager.Instance.GetEliteTroopReserve();
-            eliteReserveText.text = $"Elite Reserve: {reserve}";
+            eliteReserveText.text = $"<color=#8B8878>Stormtroopers:</color> <color=#7EC8C8>{reserve}</color>";
         }
         //Button fill and text
         if (eliteButtonText != null)
