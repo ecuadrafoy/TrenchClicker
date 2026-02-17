@@ -52,19 +52,26 @@
     <Analyzer Include="E:\projectsUnity\TrenchClicker\Library\PackageCache\org.nuget.microsoft.codeanalysis.analyzers@bcf103d84432\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\AnimatorGearSwitcher.cs" />
     <Compile Include="Assets\Scripts\Progression\WeatherStationManager.cs" />
     <Compile Include="Assets\Scripts\Core\InputManager.cs" />
     <Compile Include="Assets\Scripts\Core\UpgradeManager.cs" />
+    <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\SmoothCameraFollow.cs" />
+    <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\GearPresetManager.cs" />
     <Compile Include="Assets\Scripts\Core\WeatherManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIShop.cs" />
     <Compile Include="Assets\Scripts\UI\DebugOverlay.cs" />
     <Compile Include="Assets\Scripts\Core\EliteTroopManager.cs" />
+    <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\AnimationController.cs" />
+    <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\TooltipManager.cs" />
+    <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\SpritesheetGenerator.cs" />
     <Compile Include="Assets\PlayerInputActions.cs" />
     <Compile Include="Assets\Scripts\Data\UpgradeData.cs" />
     <Compile Include="Assets\Scripts\UI\ClickButton.cs" />
     <Compile Include="Assets\Scripts\Data\WeatherData.cs" />
     <Compile Include="Assets\Scripts\Core\GameManager.cs" />
     <Compile Include="Assets\Scripts\UI\UISpecialShop.cs" />
+    <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1313,8 +1320,20 @@
       <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>Library\ScriptAssemblies\Cinemachine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.PackageValidationSuite.Editor.Extension">
+      <HintPath>Library\ScriptAssemblies\Unity.PackageValidationSuite.Editor.Extension.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.PackageValidationSuite.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.PackageValidationSuite.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
@@ -1483,6 +1502,10 @@
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Runtime">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="com.unity.cinemachine.editor">
+      <HintPath>Library\ScriptAssemblies\com.unity.cinemachine.editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.State">
