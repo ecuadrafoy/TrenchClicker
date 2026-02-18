@@ -4326,7 +4326,7 @@ MonoBehaviour:
   totalSoldiersSent: 0
   groundGained: 0
   soldiersPerClick: 1
-  enemyTrenchHP: 100
+  enemyTrenchHP: 10000
   soldierDamageMin: 0
   soldierDamageMax: 1
   assaultDuration: 90
@@ -4382,14 +4382,15 @@ MonoBehaviour:
   soldierPrefab: {fileID: 4561806982560044282, guid: c6098492e7c9ea34f832592041dcfa56, type: 3}
   spawnPoint: {fileID: 279979452}
   targetPoint: {fileID: 289248576}
-  poolSize: 30
-  soldiersPerBatch: 3
+  poolSize: 60
+  maxSoldiersPerBatch: 10
   baseSpeed: 2
   speedVariation: 0.5
   yMin: -0.2
   yMax: 0.2
   zSpread: 5
   directionRow: 6
+  framesPerRow: 8
 --- !u!1 &1462578304
 GameObject:
   m_ObjectHideFlags: 0

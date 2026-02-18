@@ -6,58 +6,58 @@ public class SoldierVisual : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     private Sprite[] runFrames;
-    private Sprite[] dieFrames;
+    private Sprite[][] dieFrames;
+    private Sprite[] activeDieFrames;
     // Animation state
     private int currentFrame;
     private float frameTimer;
-    private float frameInterval = 0.1f;
+    [SerializeField] private float frameInterval = 0.1f;
+    [SerializeField] private float deathFrameInterval = 0.15f;
     // Movement
     private float speed;
     private Vector3 targetPosition;
-    //State tracking
+    private float casualtyChance;
+    private Vector3 deathVelocity;
+    // State tracking
     private bool isDying;
-    private bool isActive;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
-    public void Initialize(Sprite[] runSprites, Sprite[] dieSprites, float moveSpeed, Vector3 target, float yOffset)
+    public void Initialize(Sprite[] runSprites, Sprite[][] dieSprites, float moveSpeed, Vector3 target, float deathChance)
     {
         runFrames = runSprites;
         dieFrames = dieSprites;
         speed = moveSpeed;
         targetPosition = target;
+        casualtyChance = deathChance;
 
         isDying = false;
-        isActive = true;
         currentFrame = 0;
         frameTimer = 0f;
-        //Position solider at its spawn point
-        Vector3 spawnPos = transform.position;
-        spawnPos.y += yOffset;
-        transform.position = spawnPos;
+        deathVelocity = Vector3.zero;
+        spriteRenderer.flipX = false;
 
         spriteRenderer.sprite = runFrames[0];
         gameObject.SetActive(true);
     }
     void Update()
     {
-        if (!isActive) return;
-
+        float interval = isDying ? deathFrameInterval : frameInterval;
         frameTimer += Time.deltaTime;
-        if (frameTimer >= frameInterval)
+        if (frameTimer >= interval)
         {
-            frameTimer -= frameInterval;
+            frameTimer -= interval;
             currentFrame++;
             if (isDying)
             {
-                if (currentFrame >= dieFrames.Length)
+                if (currentFrame >= activeDieFrames.Length)
                 {
                     Deactivate();
                     return;
                 }
-                spriteRenderer.sprite = dieFrames[currentFrame];
+                spriteRenderer.sprite = activeDieFrames[currentFrame];
             }
             else
             {
@@ -67,9 +67,21 @@ public class SoldierVisual : MonoBehaviour
             }
 
         }
-        // Only move while running, not while dying
-        if (!isDying)
+        if (isDying)
         {
+            // Carry forward momentum and decelerate — prevents the sudden "wall stop" on death
+            transform.Translate(deathVelocity * Time.deltaTime, Space.World);
+            deathVelocity = Vector3.Lerp(deathVelocity, Vector3.zero, Time.deltaTime * 4f);
+        }
+        else
+        {
+            // Random casualty chance — some soldiers die before reaching the target
+            if (Random.value < casualtyChance * Time.deltaTime)
+            {
+                StartDying();
+                return;
+            }
+
             Vector3 direction = (targetPosition - transform.position).normalized;
             transform.Translate(direction * speed * Time.deltaTime, Space.World);
             if (Vector3.Distance(transform.position, targetPosition) < 0.3f)
@@ -82,11 +94,21 @@ public class SoldierVisual : MonoBehaviour
         isDying = true;
         currentFrame = 0;
         frameTimer = 0f;
-        spriteRenderer.sprite = dieFrames[0];
+
+        // Pick a random death animation row from the sheet
+        activeDieFrames = dieFrames[Random.Range(0, dieFrames.Length)];
+
+        // Carry forward momentum into death so the soldier doesn't stop dead
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        deathVelocity = direction * speed * 0.4f;
+
+        // Randomly flip to break up visual uniformity
+        spriteRenderer.flipX = Random.value > 0.5f;
+
+        spriteRenderer.sprite = activeDieFrames[0];
     }
     private void Deactivate()
     {
-        isActive = false;
         gameObject.SetActive(false);
         SoldierVisualManager.Instance.ReturnToPool(this);
     }
