@@ -55,6 +55,7 @@
     <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\AnimatorGearSwitcher.cs" />
     <Compile Include="Assets\Scripts\Progression\WeatherStationManager.cs" />
     <Compile Include="Assets\Scripts\Core\InputManager.cs" />
+    <Compile Include="Assets\Scripts\Combat\SoldierVisual.cs" />
     <Compile Include="Assets\Scripts\Core\UpgradeManager.cs" />
     <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\SmoothCameraFollow.cs" />
     <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\GearPresetManager.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Assets\Scripts\Data\UpgradeData.cs" />
     <Compile Include="Assets\Scripts\UI\ClickButton.cs" />
     <Compile Include="Assets\Scripts\Data\WeatherData.cs" />
+    <Compile Include="Assets\Scripts\Core\SoldierVisualManager.cs" />
     <Compile Include="Assets\Scripts\Core\GameManager.cs" />
     <Compile Include="Assets\Scripts\UI\UISpecialShop.cs" />
     <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\PlayerController.cs" />
@@ -709,7 +711,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ReflectorNet">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@dbc394866437\Plugins\com.IvanMurzak.ReflectorNet\ReflectorNet.dll</HintPath>
+      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@76b97931168e\Plugins\com.IvanMurzak.ReflectorNet\ReflectorNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Text.Encodings.Web">
@@ -737,7 +739,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="McpPlugin">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@dbc394866437\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.dll</HintPath>
+      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@76b97931168e\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.IO.Pipelines">
@@ -777,7 +779,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="McpPlugin.Common">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@dbc394866437\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.Common.dll</HintPath>
+      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@76b97931168e\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Net.ServerSentEvents">
@@ -1316,8 +1318,8 @@
       <HintPath>Library\ScriptAssemblies\Unity.Rendering.LightTransport.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.AI.Navigation">
-      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.dll</HintPath>
+    <Reference Include="Unity.PackageValidationSuite.Editor.Extension">
+      <HintPath>Library\ScriptAssemblies\Unity.PackageValidationSuite.Editor.Extension.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Cinemachine">
@@ -1328,8 +1330,8 @@
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.PackageValidationSuite.Editor.Extension">
-      <HintPath>Library\ScriptAssemblies\Unity.PackageValidationSuite.Editor.Extension.dll</HintPath>
+    <Reference Include="Unity.AI.Navigation">
+      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.PackageValidationSuite.Editor">

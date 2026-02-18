@@ -122,6 +122,7 @@ public class GameManager : MonoBehaviour
 
         // Update UI
         UIManager.Instance?.UpdateUI();
+        SoldierVisualManager.Instance?.SpawnSoldierBatch();
     }
     private void StartAssault()
     {
