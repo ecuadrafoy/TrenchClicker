@@ -29,7 +29,7 @@ com.IvanMurzak.Unity.MCP.Installer.Tests.csproj
 Assets/com.IvanMurzak.Unity.MCP.Installer/Editor/Meta/
 Assets/com.IvanMurzak.Unity.MCP.Installer/Runtime/Meta/
 Assets/com.IvanMurzak.Unity.MCP.Installer/Tests/Meta/
-*.meta
+
 
 #Character Sprite Maker
 Assets/SmallScaleInt/
