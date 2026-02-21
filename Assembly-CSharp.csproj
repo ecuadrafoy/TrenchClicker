@@ -711,7 +711,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ReflectorNet">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@76b97931168e\Plugins\com.IvanMurzak.ReflectorNet\ReflectorNet.dll</HintPath>
+      <HintPath>Packages\com.ivanmurzak.unity.mcp\Plugins\com.IvanMurzak.ReflectorNet\ReflectorNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Text.Encodings.Web">
@@ -739,7 +739,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="McpPlugin">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@76b97931168e\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.dll</HintPath>
+      <HintPath>Packages\com.ivanmurzak.unity.mcp\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.IO.Pipelines">
@@ -779,7 +779,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="McpPlugin.Common">
-      <HintPath>Library\PackageCache\com.ivanmurzak.unity.mcp@76b97931168e\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.Common.dll</HintPath>
+      <HintPath>Packages\com.ivanmurzak.unity.mcp\Plugins\com.IvanMurzak.McpPlugin\netstandard2.1\McpPlugin.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Net.ServerSentEvents">
@@ -1312,6 +1312,10 @@
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="com.IvanMurzak.Unity.MCP.Tests">
+      <HintPath>Library\ScriptAssemblies\com.IvanMurzak.Unity.MCP.Tests.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Rendering.LightTransport.Editor">

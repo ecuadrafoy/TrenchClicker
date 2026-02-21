@@ -180,6 +180,7 @@ public class GameManager : MonoBehaviour
         totalTrenchesCaptured++;
         // End elite deployment with victory bonus (before ResetAssault clears weather)
         EliteTroopManager.Instance.OnTrenchCaptured();
+        SoldierVisualManager.Instance?.OnTrenchCaptured();
         // Award new elite troops
         EliteTroopManager.Instance.AwardNewElites();
         AwardRequisitionPoints();

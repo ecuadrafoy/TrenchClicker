@@ -15,6 +15,7 @@ public class SoldierVisualManager : MonoBehaviour
     [SerializeField] private float baseSpeed = 2f;
     [SerializeField] private float speedVariation = 0.5f;
     [SerializeField] private float casualtyChance = 0.1f;
+    [SerializeField] private float runAttackChance = 0.3f;
 
     [Header("Spawn Spread")]
     [SerializeField] private float yMin = -1f;
@@ -27,7 +28,10 @@ public class SoldierVisualManager : MonoBehaviour
 
     //Object pool
     private Queue<SoldierVisual> pool;
+    private HashSet<SoldierVisual> activeSoldiers = new HashSet<SoldierVisual>();
     private Sprite[] runFrames;
+    private Sprite[] attackFrames;
+    private Sprite[] runAttackFrames;
     private Sprite[][] allDieFrames;
 
     private void Awake()
@@ -41,26 +45,19 @@ public class SoldierVisualManager : MonoBehaviour
         LoadSprites();
         InitializePool();
     }
+    private void Update()
+    {
+        if (activeSoldiers.Count > 0 && !GameManager.Instance.IsAssaultActive())
+            OnTrenchCaptured();
+    }
     private void LoadSprites()
     {
-        Sprite[] allRunSprites = Resources.LoadAll<Sprite>("Run");
+        runFrames = LoadSingleRow("Run");
+        attackFrames = LoadSingleRow("Attack1");
+        runAttackFrames = LoadSingleRow("RunAttack");
+
         Sprite[] allDieSprites = Resources.LoadAll<Sprite>("Die");
-
-        // Sort by name numerically (Resources.LoadAll order is not guaranteed)
-        System.Array.Sort(allRunSprites, (a, b) => ExtractIndex(a.name).CompareTo(ExtractIndex(b.name)));
         System.Array.Sort(allDieSprites, (a, b) => ExtractIndex(a.name).CompareTo(ExtractIndex(b.name)));
-
-        // Rows are ordered bottom-to-top in the spritesheet but top-to-bottom in Unity's slice order
-        // So we flip: Unity row = (totalRows - 1) - directionRow
-        int totalRows = allRunSprites.Length / framesPerRow;
-        int unityRow = (totalRows - 1) - directionRow;
-        int startIndex = unityRow * framesPerRow;
-
-        runFrames = new Sprite[framesPerRow];
-        for (int i = 0; i < framesPerRow; i++)
-            runFrames[i] = allRunSprites[startIndex + i];
-
-        // Load all rows of the die sheet so soldiers can pick a random death animation
         int dieTotalRows = allDieSprites.Length / framesPerRow;
         allDieFrames = new Sprite[dieTotalRows][];
         for (int row = 0; row < dieTotalRows; row++)
@@ -70,6 +67,18 @@ public class SoldierVisualManager : MonoBehaviour
             for (int i = 0; i < framesPerRow; i++)
                 allDieFrames[row][i] = allDieSprites[rowStart + i];
         }
+    }
+    private Sprite[] LoadSingleRow(string resourceName)
+    {
+        Sprite[] all = Resources.LoadAll<Sprite>(resourceName);
+        System.Array.Sort(all, (a, b) => ExtractIndex(a.name).CompareTo(ExtractIndex(b.name)));
+        int totalRows = all.Length / framesPerRow;
+        int unityRow = (totalRows - 1) - directionRow;
+        int startIndex = unityRow * framesPerRow;
+        Sprite[] row = new Sprite[framesPerRow];
+        for (int i = 0; i < framesPerRow; i++)
+            row[i] = all[startIndex + i];
+        return row;
     }
 
     private int ExtractIndex(string spriteName)
@@ -93,22 +102,30 @@ public class SoldierVisualManager : MonoBehaviour
             float yPos = Random.Range(yMin, yMax);
             float zOffset = Random.Range(-zSpread, zSpread);
             soldier.transform.position = spawnPoint.position + new Vector3(0f, yPos, zOffset);
-            soldier.Initialize(runFrames, allDieFrames, speed, targetPoint.position + new Vector3(0f, 0f, zOffset), casualtyChance);
+            Sprite[] chosenRunFrames = Random.value < runAttackChance ? runAttackFrames : runFrames;
+            soldier.Initialize(chosenRunFrames, attackFrames, allDieFrames, speed, targetPoint.position + new Vector3(0f, 0f, zOffset), casualtyChance);
         }
     }
 
     private SoldierVisual GetFromPool()
     {
+        SoldierVisual soldier;
         if (pool.Count > 0)
-            return pool.Dequeue();
+            soldier = pool.Dequeue();
+        else
+        {
+            // Pool empty — grow it on demand, soldier will return via ReturnToPool
+            GameObject obj = Instantiate(soldierPrefab);
+            obj.SetActive(false);
+            soldier = obj.GetComponent<SoldierVisual>();
+        }
+        activeSoldiers.Add(soldier);
+        return soldier;
 
-        // Pool empty — grow it on demand, soldier will return via ReturnToPool
-        GameObject obj = Instantiate(soldierPrefab);
-        obj.SetActive(false);
-        return obj.GetComponent<SoldierVisual>();
     }
     public void ReturnToPool(SoldierVisual soldier)
     {
+        activeSoldiers.Remove(soldier);
         pool.Enqueue(soldier);
     }
     private void InitializePool()
@@ -121,6 +138,12 @@ public class SoldierVisualManager : MonoBehaviour
             SoldierVisual soldier = obj.GetComponent<SoldierVisual>();
             pool.Enqueue(soldier);
         }
+    }
+    public void OnTrenchCaptured()
+    {
+        var toDeactivate = new List<SoldierVisual>(activeSoldiers);
+        foreach (var soldier in toDeactivate)
+            soldier.ForceDeactivate();
     }
 
 }
