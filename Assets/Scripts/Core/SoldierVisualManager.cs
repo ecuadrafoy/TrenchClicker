@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+
 public class SoldierVisualManager : MonoBehaviour
 {
     public static SoldierVisualManager Instance { get; private set; }
@@ -10,6 +11,9 @@ public class SoldierVisualManager : MonoBehaviour
     [SerializeField] private Transform targetPoint;
     [SerializeField] private int initialPoolSize = 20;
     [SerializeField] private int maxSoldiersPerBatch = 10;
+
+    [Header("Elite Visuals")]
+    [SerializeField] private Color eliteTint = new Color(0.49f, 0.78f, 0.78f, 1f);
 
     [Header("Movement")]
     [SerializeField] private float baseSpeed = 2f;
@@ -144,6 +148,21 @@ public class SoldierVisualManager : MonoBehaviour
         var toDeactivate = new List<SoldierVisual>(activeSoldiers);
         foreach (var soldier in toDeactivate)
             soldier.ForceDeactivate();
+    }
+    public void SpawnEliteBatch(int count)
+    {
+        int visualCount = Mathf.Clamp(Mathf.CeilToInt(Mathf.Log(count + 1, 2)), 1, maxSoldiersPerBatch);
+        for (int i = 0; i < visualCount; i++)
+        {
+            SoldierVisual soldier = GetFromPool();
+            float speed = baseSpeed + Random.Range(-speedVariation, speedVariation);
+            float yPos = Random.Range(yMin, yMax);
+            float zOffset = Random.Range(-zSpread, zSpread);
+            soldier.transform.position = spawnPoint.position + new Vector3(0f, yPos, zOffset);
+            Sprite[] chosenRunFrames = Random.value < runAttackChance ? runAttackFrames : runFrames;
+            soldier.Initialize(chosenRunFrames, attackFrames, allDieFrames, speed, targetPoint.position + new Vector3(0f, 0f, zOffset), casualtyChance);
+            soldier.SetTint(eliteTint);
+        }
     }
 
 }

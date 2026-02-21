@@ -51,6 +51,7 @@ public class EliteTroopManager : MonoBehaviour
         eliteDeploymentDuration = (eliteDeployedCount / 100f) * eliteDeploymentDurationPer100;
         eliteDeploymentTimer = eliteDeploymentDuration;
         elitesActive = true;
+        SoldierVisualManager.Instance?.SpawnEliteBatch(eliteDeployedCount);
         Debug.Log($"Deployed {eliteDeployedCount} elite troops for {eliteDeploymentDuration:F1}s");
     }
 

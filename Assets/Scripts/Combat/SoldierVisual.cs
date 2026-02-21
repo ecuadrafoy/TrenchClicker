@@ -30,6 +30,7 @@ public class SoldierVisual : MonoBehaviour
     }
     public void Initialize(Sprite[] runSprites, Sprite[] attackSprites, Sprite[][] dieSprites, float moveSpeed, Vector3 target, float deathChance)
     {
+        spriteRenderer.color = Color.white;
         activeRunFrames = runSprites;
         attackFrames = attackSprites;
         dieFrames = dieSprites;
@@ -133,6 +134,10 @@ public class SoldierVisual : MonoBehaviour
     public void ForceDeactivate()
     {
         Deactivate();
+    }
+    public void SetTint(Color tint)
+    {
+        spriteRenderer.color = tint;
     }
     private void Deactivate()
     {
