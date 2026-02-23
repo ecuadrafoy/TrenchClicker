@@ -72,6 +72,7 @@
     <Compile Include="Assets\Scripts\UI\ClickButton.cs" />
     <Compile Include="Assets\Scripts\Data\WeatherData.cs" />
     <Compile Include="Assets\Scripts\Core\SoldierVisualManager.cs" />
+    <Compile Include="Assets\Scripts\UI\ProgressionWidget.cs" />
     <Compile Include="Assets\Scripts\Core\GameManager.cs" />
     <Compile Include="Assets\Scripts\UI\UISpecialShop.cs" />
     <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\PlayerController.cs" />

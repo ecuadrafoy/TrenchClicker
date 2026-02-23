@@ -15,7 +15,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Button clickButton;
     [SerializeField] private Button startAssaultButton;
-    [SerializeField] private TextMeshProUGUI levelText;
 
     [Header("Weather Display")]
     [SerializeField] private TextMeshProUGUI weatherText;
@@ -236,10 +235,6 @@ public class UIManager : MonoBehaviour
         if (requisitionPointsText != null)
         {
             requisitionPointsText.text = $"<color=#8B8878>RP:</color> <color=#D4C878>{GameManager.Instance.GetRequisitionPoints()}</color>";
-        }
-        if (levelText != null && ProgressionManager.Instance != null)
-        {
-            levelText.text = $"<color=#8B8878>Rank:</color> <color=#D4C878>{ProgressionManager.Instance.GetLevelName()}</color>";
         }
         if (enemyHPText != null)
         {

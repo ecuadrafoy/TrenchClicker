@@ -27,6 +27,7 @@ public class ProgressionManager : MonoBehaviour
         return (float)sum / assaultHistory.Count;
     }
     public int GetSoldiersThisAssault() => soldiersSentThisAssault;
+    public int[] GetLevelThresholds() => levelThresholds;
     public void StartNewAssault()
     {
         soldiersSentThisAssault = 0;
