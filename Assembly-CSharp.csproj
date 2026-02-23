@@ -62,6 +62,7 @@
     <Compile Include="Assets\Scripts\Core\WeatherManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIShop.cs" />
     <Compile Include="Assets\Scripts\UI\DebugOverlay.cs" />
+    <Compile Include="Assets\Scripts\Core\ProgressionManager.cs" />
     <Compile Include="Assets\Scripts\Core\EliteTroopManager.cs" />
     <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\AnimationController.cs" />
     <Compile Include="Assets\SmallScaleInt\Character creator - Modern\Example Scene\Scripts\TooltipManager.cs" />

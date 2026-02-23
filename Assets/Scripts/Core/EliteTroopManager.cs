@@ -9,6 +9,7 @@ public class EliteTroopManager : MonoBehaviour
     [SerializeField] private int minElitesEarnedPerTrench = 10;
     [SerializeField] private int maxElitesEarnedPerTrench = 20;
     [SerializeField] private float eliteDeploymentDurationPer100 = 3f;
+    [SerializeField] private int requiredLevel = 2;
 
     private int eliteTroopReserve;
     private bool elitesActive = false;
@@ -42,15 +43,18 @@ public class EliteTroopManager : MonoBehaviour
     public float GetEliteDeploymentDuration() => eliteDeploymentDuration;
     public int GetEliteDeployedCount() => eliteDeployedCount;
     public void AddEliteReserve(int amount) => eliteTroopReserve += amount;
+    public int GetRequiredLevel() => requiredLevel;
 
     public void DeployEliteTroops()
     {
         if (!GameManager.Instance.IsAssaultActive() || elitesActive || eliteTroopReserve <= 0) return;
+        if (ProgressionManager.Instance != null && ProgressionManager.Instance.GetLevel() < requiredLevel) return;
         eliteDeployedCount = eliteTroopReserve;
         eliteTroopReserve = 0;
         eliteDeploymentDuration = (eliteDeployedCount / 100f) * eliteDeploymentDurationPer100;
         eliteDeploymentTimer = eliteDeploymentDuration;
         elitesActive = true;
+        ProgressionManager.Instance?.RecordSoldiers(eliteDeployedCount);
         SoldierVisualManager.Instance?.SpawnEliteBatch(eliteDeployedCount);
         Debug.Log($"Deployed {eliteDeployedCount} elite troops for {eliteDeploymentDuration:F1}s");
     }

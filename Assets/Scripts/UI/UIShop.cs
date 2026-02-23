@@ -39,6 +39,16 @@ public class UIShop : MonoBehaviour
     private void UpdateUpgradeUI(UpgradeData upgrade, TextMeshProUGUI nameText, TextMeshProUGUI descText, TextMeshProUGUI costText, Button buyButton)
     {
         if (upgrade == null) return;
+        // Locked by progression level
+        bool isUnlocked = ProgressionManager.Instance == null || ProgressionManager.Instance.GetLevel() >= upgrade.requiredLevel;
+        if (!isUnlocked)
+        {
+            nameText.text = $"[LOCKED] {upgrade.upgradeName}";
+            descText.text = $"Requires Level {upgrade.requiredLevel}";
+            costText.text = "—";
+            buyButton.interactable = false;
+            return;
+        }
 
         // Update text
         nameText.text = upgrade.upgradeName;

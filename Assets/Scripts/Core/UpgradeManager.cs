@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class UpgradeManager : MonoBehaviour
@@ -23,6 +22,11 @@ public class UpgradeManager : MonoBehaviour
     public bool TryPurchaseUpgrade(UpgradeData upgrade)
     {
         if (GameManager.Instance == null) return false;
+        if (ProgressionManager.Instance != null && ProgressionManager.Instance.GetLevel() < upgrade.requiredLevel)
+        {
+            Debug.Log($"Cannot purchase {upgrade.upgradeName}. Required {upgrade.requiredLevel}");
+            return false;
+        }
         int currentCurrency = GameManager.Instance.GetRequisitionPoints();
 
         // check if can afford

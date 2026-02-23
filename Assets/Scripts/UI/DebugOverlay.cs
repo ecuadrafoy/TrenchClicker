@@ -43,6 +43,9 @@ public class DebugOverlay : MonoBehaviour
     private Text eliteTimerText;
     private Text eliteDeployedText;
     private Text reqPointsText;
+    private Text progressionLevelText;
+    private Text progressionAvgText;
+    private Text progressionThisAssaultText;
 
     private Slider damageMinSlider;
     private Slider damageMaxSlider;
@@ -141,6 +144,9 @@ public class DebugOverlay : MonoBehaviour
         eliteTimerText = AddLabel(scrollContent, "Elite Timer: 0.0/0.0s", ref y);
         eliteDeployedText = AddLabel(scrollContent, "Elite Deployed: 0", ref y);
         reqPointsText = AddLabel(scrollContent, "Req Points: 0", ref y);
+        progressionLevelText = AddLabel(scrollContent, "Rank: Private (Lv 1)", ref y);
+        progressionAvgText = AddLabel(scrollContent, "Avg Soldiers: 0.0", ref y);
+        progressionThisAssaultText = AddLabel(scrollContent, "This Assault: 0", ref y);
         y += SECTION_SPACING;
 
         // === CONTROLS SECTION ===
@@ -166,6 +172,7 @@ public class DebugOverlay : MonoBehaviour
         AddButton(scrollContent, "Deploy Elites", ref y, OnDeployElites);
         AddButton(scrollContent, "Add 50 Elite Reserve", ref y, OnAddEliteReserve);
         AddButton(scrollContent, "Add 100 RP", ref y, OnAddReqPoints);
+        AddButton(scrollContent, "Record 500 Soldiers", ref y, OnRecordSoldiers);
 
         // Set content size
         var contentRT = scrollContent.GetComponent<RectTransform>();
@@ -545,6 +552,13 @@ public class DebugOverlay : MonoBehaviour
         eliteTimerText.text = $"Elite Timer: {em.GetEliteDeploymentTimer():F1}/{em.GetEliteDeploymentDuration():F1}s";
         eliteDeployedText.text = $"Elite Deployed: {em.GetEliteDeployedCount()}";
         reqPointsText.text = $"Req Points: {gm.GetRequisitionPoints()}";
+        var pm = ProgressionManager.Instance;
+        if (pm != null)
+        {
+            progressionLevelText.text = $"Rank: {pm.GetLevelName()} (Lv {pm.GetLevel()})";
+            progressionAvgText.text = $"Avg Soldiers: {pm.GetRollingAverage():F1}";
+            progressionThisAssaultText.text = $"This Assault: {pm.GetSoldiersThisAssault()}";
+        }
     }
 
     // --- CONTROL CALLBACKS ---
@@ -633,5 +647,10 @@ public class DebugOverlay : MonoBehaviour
     private void OnAddReqPoints()
     {
         GameManager.Instance?.AddRequisitionPoints(100);
+    }
+
+    private void OnRecordSoldiers()
+    {
+        ProgressionManager.Instance?.RecordSoldiers(500);
     }
 }

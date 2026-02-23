@@ -115,6 +115,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         totalSoldiersSent += soldiersPerClick;
+        ProgressionManager.Instance?.RecordSoldiers(soldiersPerClick);
         Debug.Log($"Soldiers sent: {soldiersPerClick}. Total: {totalSoldiersSent}");
 
         // Process combat immediately (for clicker prototype)
@@ -127,6 +128,7 @@ public class GameManager : MonoBehaviour
     private void StartAssault()
     {
         isAssaultActive = true;
+        ProgressionManager.Instance?.StartNewAssault();
         currentAssaultTime = 0f;
         Debug.Log("ASSAULT STARTED! Timer begins...");
     }
@@ -178,6 +180,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Trench Captured!");
         groundGained += 120f;
         totalTrenchesCaptured++;
+        ProgressionManager.Instance?.OnAssaultComplete();
         // End elite deployment with victory bonus (before ResetAssault clears weather)
         EliteTroopManager.Instance.OnTrenchCaptured();
         SoldierVisualManager.Instance?.OnTrenchCaptured();

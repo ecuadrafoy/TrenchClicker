@@ -20,3 +20,4 @@ MonoBehaviour:
   baseCost: 15
   costMutiplier: 1.6
   maxPurchases: -1
+  requiredLevel: 2

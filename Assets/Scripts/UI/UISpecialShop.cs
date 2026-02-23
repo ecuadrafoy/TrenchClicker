@@ -41,6 +41,15 @@ public class UISpecialShop : MonoBehaviour
 
         int level = WeatherStationManager.Instance.GetLevel();
         weatherStationNameText.text = $"Weather Station (Level {level})";
+        bool isUnlocked = ProgressionManager.Instance == null ||
+                    ProgressionManager.Instance.GetLevel() >= WeatherStationManager.Instance.GetRequiredLevel();
+        if (!isUnlocked)
+        {
+            weatherStationDescText.text = $"Requires Level {WeatherStationManager.Instance.GetRequiredLevel()}";
+            weatherStationCostText.text = "—";
+            weatherStationBuyButton.interactable = false;
+            return;
+        }
 
         if (level >= 3)
         {

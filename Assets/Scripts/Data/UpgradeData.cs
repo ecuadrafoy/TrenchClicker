@@ -27,6 +27,8 @@ public class UpgradeData : ScriptableObject
 
     [Header("Limits")]
     public int maxPurchases = -1; // -1 for unlimited
+    [Header("Progression")]
+    public int requiredLevel = 1;
 
     //Track purchases at runtime
     [System.NonSerialized]

@@ -7,6 +7,7 @@ public class WeatherStationManager : MonoBehaviour
     public static WeatherStationManager Instance { get; private set; }
     private int currentLevel = 0;
     private readonly int[] levelCosts = { 500, 2000, 5000 };
+    [SerializeField] private int requiredLevel = 5;
     void Awake()
     {
         if (Instance == null)
@@ -28,12 +29,14 @@ public class WeatherStationManager : MonoBehaviour
     public bool CanUpgrade()
     {
         if (currentLevel >= levelCosts.Length) return false;
+        if (ProgressionManager.Instance != null && ProgressionManager.Instance.GetLevel() < requiredLevel) return false;
         int cost = levelCosts[currentLevel];
         return GameManager.Instance.GetRequisitionPoints() >= cost;
     }
     public bool TryUpgrade()
     {
         if (!CanUpgrade()) return false;
+        if (ProgressionManager.Instance != null && ProgressionManager.Instance.GetLevel() < requiredLevel) return false;
         int cost = levelCosts[currentLevel];
         GameManager.Instance.SpendRequisitionPoints(cost);
         currentLevel++;
@@ -111,4 +114,6 @@ public class WeatherStationManager : MonoBehaviour
         }
         return totalTime > 0f ? totalWeightedEff / totalTime : 1f;
     }
+
+    public int GetRequiredLevel() => requiredLevel;
 }
